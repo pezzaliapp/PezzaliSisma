@@ -19,6 +19,28 @@ button.danger{border-color:#7a2b2b;color:#ff8a8a}
 .privacy details{margin-top:6px}
 .privacy summary{cursor:pointer;color:var(--blue)}
 .privacy code{background:#0d1324;border:1px solid var(--line);border-radius:5px;padding:0 4px}
+
+/* --- Fix mobile scroll mappa + layout mobile (Milestone 1.2) --- */
+/* Di default la mappa lascia scorrere verticalmente la pagina; quando
+   "bloccata" (interattiva) cattura i gesti. */
+.leaflet-container{touch-action:pan-y}
+.leaflet-container.map-locked{touch-action:none;overscroll-behavior:contain}
+.map-lock-btn{display:none;font-weight:700;font-size:13px;background:var(--blue);color:#fff;border:0;border-radius:10px;padding:9px 12px;box-shadow:0 2px 8px #0006;cursor:pointer}
+footer{padding-bottom:max(8px,env(safe-area-inset-bottom))}
+@media(max-width:900px){
+  html,body{height:auto}                 /* il documento può crescere e scorrere */
+  body{min-height:100dvh}                 /* dvh: niente bug barra indirizzi iOS */
+  .topbar{padding:10px max(14px,env(safe-area-inset-right)) 10px max(14px,env(safe-area-inset-left))}
+  h1{font-size:22px}
+  .topbar p{display:none}                 /* header più compatto */
+  .app{display:flex;flex-direction:column;flex:none}  /* stack, niente altezza forzata */
+  .mapWrap{position:relative;height:48dvh;min-height:300px;order:-1}  /* mappa non troppo alta, in cima */
+  #map{position:absolute;inset:0}
+  .panel{overflow:visible;max-height:none;border-right:0;padding:14px}
+  .map-lock-btn{display:inline-block}     /* pulsante visibile solo su mobile */
+  .legend{right:10px;bottom:10px;gap:7px;padding:7px 8px;max-width:72%}
+  .legend span{font-size:11px}
+}
 .nearestBody .nearGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .nearGrid div{background:#0d1324;border:1px solid var(--line);border-radius:12px;padding:10px}
 .nearGrid span{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}

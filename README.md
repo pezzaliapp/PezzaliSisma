@@ -10,6 +10,10 @@ recenti su una mappa interattiva usando i dati pubblici **USGS**.
 Funziona da un **semplice link HTTPS** su iPhone, Android, Mac, Windows e Linux,
 ed è installabile come app (PWA).
 
+> 📱 **Fix mobile iOS: la mappa non blocca più lo scroll della pagina.** Su mobile
+> la mappa non cattura lo scroll verticale; usa il pulsante **«Blocca mappa» /
+> «Sblocca mappa»** per attivare pan e zoom. Vedi [CHANGELOG.md](CHANGELOG.md).
+
 ---
 
 ## Caratteristiche (Milestone 1 + 1.1)

@@ -13,8 +13,65 @@ import {
 const L = window.L;
 
 let map = null;
-let markerLayer = null; // eventi sismici
-let userLayer = null;   // posizione utente + cerchi di distanza
+let markerLayer = null;   // eventi sismici
+let userLayer = null;     // posizione utente + cerchi di distanza
+let lockBtnEl = null;     // pulsante "Blocca/Sblocca mappa"
+let mapInteractive = true; // true = la mappa cattura i gesti (pan/zoom)
+let mqMobile = null;      // media query mobile
+
+function isMobile() {
+  return mqMobile ? mqMobile.matches : false;
+}
+
+// Abilita/disabilita la cattura dei gesti da parte della mappa.
+// Quando NON interattiva, `touch-action: pan-y` (via classe) lascia scorrere
+// verticalmente la pagina: i marker restano comunque cliccabili (tap = click),
+// e i pulsanti +/- continuano a funzionare.
+function setMapInteractive(on) {
+  mapInteractive = on;
+  const c = map.getContainer();
+  if (on) {
+    map.dragging.enable();
+    map.touchZoom.enable();
+    map.doubleClickZoom.enable();
+    if (!isMobile()) map.scrollWheelZoom.enable();
+    c.classList.add('map-locked');
+    if (lockBtnEl) lockBtnEl.textContent = 'Sblocca mappa';
+  } else {
+    map.dragging.disable();
+    map.touchZoom.disable();
+    map.doubleClickZoom.disable();
+    map.scrollWheelZoom.disable();
+    c.classList.remove('map-locked');
+    if (lockBtnEl) lockBtnEl.textContent = 'Blocca mappa';
+  }
+}
+
+// Default per viewport: desktop sempre interattivo; mobile NON cattura lo scroll.
+function applyDefaultInteractivity() {
+  setMapInteractive(!isMobile());
+}
+
+// Pulsante "Blocca/Sblocca mappa" come controllo Leaflet (visibile su mobile).
+function addLockControl() {
+  const LockControl = L.Control.extend({
+    options: { position: 'topright' },
+    onAdd() {
+      const btn = L.DomUtil.create('button', 'map-lock-btn');
+      btn.type = 'button';
+      btn.textContent = 'Blocca mappa';
+      btn.setAttribute('aria-label', 'Blocca o sblocca l\'interazione con la mappa');
+      L.DomEvent.disableClickPropagation(btn);
+      L.DomEvent.on(btn, 'click', e => {
+        L.DomEvent.preventDefault(e);
+        setMapInteractive(!mapInteractive);
+      });
+      lockBtnEl = btn;
+      return btn;
+    }
+  });
+  map.addControl(new LockControl());
+}
 
 // Inizializza la mappa Leaflet con il tile layer OpenStreetMap.
 export function initMap() {
@@ -26,6 +83,13 @@ export function initMap() {
   // userLayer aggiunto per primo: i marker degli eventi restano cliccabili sopra.
   userLayer = L.layerGroup().addTo(map);
   markerLayer = L.layerGroup().addTo(map);
+
+  // Toggle Blocca/Sblocca + interattività di default in base al viewport.
+  mqMobile = window.matchMedia('(max-width: 900px)');
+  addLockControl();
+  applyDefaultInteractivity();
+  mqMobile.addEventListener('change', applyDefaultInteractivity);
+
   setTimeout(() => map.invalidateSize(), 250);
 }
 
