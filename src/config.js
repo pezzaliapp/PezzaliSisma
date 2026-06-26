@@ -34,3 +34,26 @@ export const REFRESH_MS = 5 * 60 * 1000;
 
 // Numero massimo di eventi mostrati nella lista laterale.
 export const LIST_LIMIT = 50;
+
+// Fasce di distanza (km) usate per cerchi, colori di prossimità e filtri.
+export const DISTANCE_BANDS = [25, 50, 100, 200];
+
+// Scala cromatica FREDDA per la prossimità, volutamente diversa dalla scala
+// CALDA della magnitudo: così un evento "piccolo ma molto vicino" e uno
+// "forte ma lontano" restano distinguibili a colpo d'occhio.
+export const PROXIMITY_COLORS = {
+  25: '#00e5ff',
+  50: '#3291ff',
+  100: '#7c5cff',
+  200: '#b388ff'
+};
+
+// Chiave localStorage per l'ultima posizione nota (SOLO su questo dispositivo).
+export const STORAGE_KEY = 'pezzalisisma:userpos';
+
+// Reverse geocoding OPZIONALE e su richiesta esplicita (servizio pubblico OSM).
+export const NOMINATIM_REVERSE = 'https://nominatim.openstreetmap.org/reverse';
+// Chiave localStorage del consenso una-tantum al reverse geocoding.
+export const GEO_CONSENT_KEY = 'pezzalisisma:geoconsent';
+// Spostamento minimo (metri) oltre il quale Comune/Provincia sono ricalcolabili.
+export const GEOCODE_MIN_MOVE_M = 500;

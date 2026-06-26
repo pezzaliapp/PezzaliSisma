@@ -1,20 +1,66 @@
 'use strict';
 
-import { REFRESH_MS } from './config.js';
+import { REFRESH_MS, GEOCODE_MIN_MOVE_M } from './config.js';
 import { state } from './state.js';
 import { fetchEvents } from './data.js';
-import { applyFilters, computeStats } from './filters.js';
-import { initMap, drawMarkers, focusEvent } from './map.js';
-import { setStatus, renderList, renderStats } from './ui.js';
+import { haversineKm } from './geo.js';
+import {
+  decorate,
+  regionMagFilter,
+  distanceFilter,
+  findNearest,
+  computeStats
+} from './filters.js';
+import {
+  initMap,
+  drawMarkers,
+  drawUserLayer,
+  clearUserLayer,
+  focusEvent,
+  centerOnUser,
+  panToUser
+} from './map.js';
+import {
+  setStatus,
+  renderList,
+  renderStats,
+  renderNearest,
+  renderBanner
+} from './ui.js';
+import {
+  loadStoredPosition,
+  storePosition,
+  clearStoredPosition,
+  locateOnce,
+  startWatch,
+  stopWatch,
+  geoErrorMessage
+} from './geolocation.js';
+import {
+  reverseGeocode,
+  hasGeoConsent,
+  setGeoConsent,
+  clearGeoConsent,
+  GEOCODE_CONSENT_MESSAGE
+} from './geocode.js';
 
 const $ = id => document.getElementById(id);
 
-// Ricalcola i filtri sullo stato corrente e aggiorna mappa, lista e statistiche.
+// Ricalcola filtri e aggiorna mappa, lista, statistiche, banner e card vicino.
 function refreshView() {
-  state.filtered = applyFilters(state.raw, state.filters);
-  drawMarkers(state.filtered, state.filters.region);
+  decorate(state.raw, state.userPos);
+  state.base = regionMagFilter(state.raw, state.filters);
+  state.nearest = findNearest(state.base, state.userPos);
+  state.filtered = distanceFilter(state.base, state.filters.maxDistance, state.userPos);
+
+  drawMarkers(state.filtered, state.filters.region, state.userPos);
+  if (state.userPos) drawUserLayer(state.userPos);
+  else clearUserLayer();
+
   renderList(state.filtered, e => focusEvent(e.lat, e.lon));
   renderStats(computeStats(state.filtered));
+  renderNearest(state.nearest);
+  renderBanner(state.userPos);
 }
 
 // Scarica i dati dalla sorgente per il periodo selezionato.
@@ -31,6 +77,127 @@ async function loadData() {
   refreshView();
 }
 
+// Applica una nuova posizione utente (da richiesta singola o da watch).
+// Comune/Provincia già noti vengono conservati finché ci si sposta di meno di
+// GEOCODE_MIN_MOVE_M metri; oltre quella soglia diventano obsoleti e vengono
+// rimossi (nessuna nuova richiesta automatica: serve un gesto esplicito).
+function setUserPos(pos, { center = false } = {}) {
+  const prev = state.userPos;
+  if (prev && prev.comune && prev.geocodedAt) {
+    const movedM =
+      haversineKm(prev.geocodedAt.lat, prev.geocodedAt.lon, pos.lat, pos.lon) * 1000;
+    if (movedM <= GEOCODE_MIN_MOVE_M) {
+      pos.comune = prev.comune;
+      pos.provincia = prev.provincia;
+      pos.geocodedAt = prev.geocodedAt;
+    }
+  }
+  state.userPos = pos;
+  storePosition(pos); // SOLO su questo dispositivo
+  refreshView();
+  if (center) centerOnUser(pos);
+  else if (state.follow) panToUser(pos);
+}
+
+// --- Geolocalizzazione -----------------------------------------------------
+
+async function onLocateClick() {
+  setStatus('Richiesta posizione…');
+  try {
+    const pos = await locateOnce();
+    setUserPos(pos, { center: true });
+    setStatus('Posizione rilevata.');
+  } catch (err) {
+    setStatus(geoErrorMessage(err)); // nessun errore JS, l'app continua
+  }
+}
+
+function onCenterClick() {
+  if (state.userPos) centerOnUser(state.userPos);
+  else onLocateClick();
+}
+
+function onFollowToggle(e) {
+  state.follow = e.target.checked;
+  if (state.follow) {
+    setStatus('Monitoraggio posizione attivo…');
+    state.watchId = startWatch(
+      pos => {
+        setUserPos(pos);
+        setStatus('Posizione aggiornata: ' + new Date().toLocaleTimeString('it-IT'));
+      },
+      err => {
+        // Disattiva in modo pulito in caso di errore/diniego.
+        stopWatch(state.watchId);
+        state.watchId = null;
+        state.follow = false;
+        $('followChk').checked = false;
+        setStatus(geoErrorMessage(err));
+      }
+    );
+  } else {
+    stopWatch(state.watchId);
+    state.watchId = null;
+    setStatus('Monitoraggio posizione disattivato.');
+  }
+}
+
+// Reverse geocoding su richiesta esplicita (Comune/Provincia).
+async function onGeocodeClick() {
+  if (!state.userPos) {
+    setStatus('Attiva prima la posizione.');
+    return;
+  }
+  // Comune già noto e ancora valido (entro la soglia): nessuna nuova richiesta.
+  if (state.userPos.comune) {
+    setStatus('Comune e Provincia già rilevati.');
+    return;
+  }
+  // Consenso una-tantum alla prima attivazione.
+  if (!hasGeoConsent()) {
+    if (!window.confirm(GEOCODE_CONSENT_MESSAGE)) {
+      setStatus('Rilevamento Comune/Provincia annullato.');
+      return;
+    }
+    setGeoConsent();
+  }
+  setStatus('Rilevo Comune e Provincia…');
+  try {
+    const { comune, provincia } = await reverseGeocode(state.userPos.lat, state.userPos.lon);
+    state.userPos.comune = comune;
+    state.userPos.provincia = provincia;
+    state.userPos.geocodedAt = { lat: state.userPos.lat, lon: state.userPos.lon };
+    storePosition(state.userPos); // SOLO su questo dispositivo
+    renderBanner(state.userPos);
+    setStatus(comune ? `Rilevato: ${comune}.` : 'Comune non disponibile per queste coordinate.');
+  } catch (err) {
+    setStatus('Reverse geocoding non riuscito: ' + err.message);
+  }
+}
+
+// Cancella ogni informazione di posizione memorizzata localmente.
+function onClearPosClick() {
+  if (state.follow) {
+    stopWatch(state.watchId);
+    state.watchId = null;
+    state.follow = false;
+    $('followChk').checked = false;
+  }
+  state.userPos = null;
+  clearStoredPosition();
+  clearGeoConsent();
+  refreshView();
+  setStatus('Posizione cancellata dal dispositivo.');
+}
+
+function onDistanceChange(e) {
+  state.filters.maxDistance = parseInt(e.target.value, 10) || 0;
+  if (state.filters.maxDistance && !state.userPos) {
+    setStatus('Attiva prima la posizione per filtrare per distanza.');
+  }
+  refreshView();
+}
+
 // Collega gli elementi dell'interfaccia ai gestori.
 function wireControls() {
   $('refreshBtn').addEventListener('click', loadData);
@@ -42,7 +209,7 @@ function wireControls() {
 
   $('areaSelect').addEventListener('change', e => {
     state.filters.region = e.target.value;
-    refreshView(); // solo refiltro dei dati già scaricati
+    refreshView();
   });
 
   $('magRange').addEventListener('input', e => {
@@ -50,6 +217,13 @@ function wireControls() {
     $('magValue').textContent = state.filters.minMag;
     refreshView();
   });
+
+  $('distanceSelect').addEventListener('change', onDistanceChange);
+  $('locateBtn').addEventListener('click', onLocateClick);
+  $('centerBtn').addEventListener('click', onCenterClick);
+  $('followChk').addEventListener('change', onFollowToggle);
+  $('geocodeBtn').addEventListener('click', onGeocodeClick);
+  $('clearPosBtn').addEventListener('click', onClearPosClick);
 }
 
 // Registra il service worker (solo su origini sicure, non da file://).
@@ -62,6 +236,11 @@ function registerServiceWorker() {
 window.addEventListener('load', () => {
   initMap();
   wireControls();
+
+  // Ripristina l'ultima posizione nota (salvata solo su questo dispositivo).
+  const stored = loadStoredPosition();
+  if (stored) state.userPos = stored;
+
   loadData();
   setInterval(loadData, REFRESH_MS);
   registerServiceWorker();

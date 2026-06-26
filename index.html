@@ -23,6 +23,18 @@
     </div>
   </header>
 
+  <!-- Banner "La tua posizione" (nascosto finché la posizione non è nota) -->
+  <section id="posBanner" class="posBanner" hidden>
+    <strong class="posTitle">La tua posizione</strong>
+    <div class="posGrid">
+      <div><span>Comune</span><b id="posComune">—</b></div>
+      <div><span>Provincia</span><b id="posProvincia">—</b></div>
+      <div><span>Coordinate</span><b id="posCoords">—</b></div>
+      <div><span>Precisione GPS</span><b id="posAccuracy">—</b></div>
+      <div><span>Ultimo aggiornamento</span><b id="posUpdated">—</b></div>
+    </div>
+  </section>
+
   <main class="app">
     <aside class="panel">
       <section class="card">
@@ -44,7 +56,41 @@
         <label>Magnitudo minima <span id="magValue">0</span>
           <input id="magRange" type="range" min="0" max="6" step="0.5" value="0" />
         </label>
+        <label>Distanza da me
+          <select id="distanceSelect">
+            <option value="0" selected>Tutte le distanze</option>
+            <option value="25">Solo entro 25 km</option>
+            <option value="50">Solo entro 50 km</option>
+            <option value="100">Solo entro 100 km</option>
+            <option value="200">Solo entro 200 km</option>
+          </select>
+        </label>
         <div id="status" class="status">Pronto.</div>
+      </section>
+
+      <section class="card">
+        <h2>Posizione</h2>
+        <div class="geoActions">
+          <button id="locateBtn" type="button">Usa la mia posizione</button>
+          <button id="centerBtn" type="button" class="ghost">Centra su di me</button>
+        </div>
+        <label class="followRow">
+          <input id="followChk" type="checkbox" />
+          <span>Segui la mia posizione</span>
+        </label>
+        <div class="geoActions geoActions2">
+          <button id="geocodeBtn" type="button" class="ghost">Rileva Comune e Provincia</button>
+          <button id="clearPosBtn" type="button" class="ghost danger">Cancella posizione</button>
+        </div>
+        <div class="privacy">
+          <p>La posizione viene utilizzata esclusivamente sul dispositivo e non viene trasmessa ad alcun server di PezzaliSisma.</p>
+          <details>
+            <summary>Informativa privacy</summary>
+            <p>Le coordinate GPS restano sul tuo dispositivo (salvate solo in <code>localStorage</code>). Comune e Provincia non vengono rilevati automaticamente.</p>
+            <p>Solo se premi «Rileva Comune e Provincia» viene inviata una singola richiesta al servizio pubblico OpenStreetMap Nominatim con le coordinate GPS, per ottenere il nome del comune. Nessun dato viene inviato ai server di PezzaliSisma. Il risultato è salvato solo sul dispositivo e non viene richiesto di nuovo finché non ti sposti di oltre 500 metri o non richiedi un aggiornamento.</p>
+            <p>«Cancella posizione» elimina tutte le informazioni di posizione memorizzate localmente.</p>
+          </details>
+        </div>
       </section>
 
       <section class="card stats">
@@ -55,6 +101,13 @@
           <div><strong id="lastEvent">–</strong><span>ultimo</span></div>
         </div>
         <p id="signal" class="signal">Caricamento dati…</p>
+      </section>
+
+      <section class="card nearestCard" id="nearestCard">
+        <h2>Terremoto più vicino</h2>
+        <div id="nearestBody" class="nearestBody">
+          <p class="nearestHint">Attiva la posizione per vedere l'evento più vicino a te.</p>
+        </div>
       </section>
 
       <section class="card listCard">
@@ -70,12 +123,18 @@
         <span><i class="m2"></i> M 2–3</span>
         <span><i class="m3"></i> M 3–4</span>
         <span><i class="m4"></i> M ≥ 4</span>
+        <span class="legendSep">·</span>
+        <span><i class="p25"></i> ≤25</span>
+        <span><i class="p50"></i> ≤50</span>
+        <span><i class="p100"></i> ≤100</span>
+        <span><i class="p200"></i> ≤200 km</span>
       </div>
     </section>
   </main>
 
   <footer>
     Fonte dati: USGS GeoJSON pubblico. Per uso informativo e didattico. Nessuna previsione sismica.
+    La posizione resta sul dispositivo.
   </footer>
 
   <script src="vendor/leaflet/leaflet.js"></script>

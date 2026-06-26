@@ -1,7 +1,7 @@
 'use strict';
 
 import { LIST_LIMIT } from './config.js';
-import { fmtTime } from './geo.js';
+import { fmtTime, timeAgo } from './geo.js';
 
 const $ = id => document.getElementById(id);
 
@@ -22,11 +22,13 @@ export function renderList(events, onSelect) {
   }
 
   events.slice(0, LIST_LIMIT).forEach(e => {
+    const dist =
+      e._dist != null ? ` · ${e._dist.toFixed(0)} km ${e._dir}` : '';
     const div = document.createElement('div');
     div.className = 'event';
     div.innerHTML =
       `<strong>M ${e.mag.toFixed(1)} — ${e.place}</strong>` +
-      `<small>${fmtTime(e.time)} · prof. ${e.depth.toFixed(1)} km</small>`;
+      `<small>${fmtTime(e.time)} · prof. ${e.depth.toFixed(1)} km${dist}</small>`;
     div.addEventListener('click', () => onSelect(e));
     box.appendChild(div);
   });
@@ -44,4 +46,40 @@ export function renderStats(stats) {
     ? `Eventi filtrati: ${stats.count}, di cui ${stats.last24h} nelle ultime 24 ore. ` +
       `Dato statistico descrittivo, non previsionale.`
     : 'Nessun evento da mostrare con i filtri correnti.';
+}
+
+// Card "Terremoto più vicino". `event` è null se la posizione non è nota.
+export function renderNearest(event) {
+  const body = $('nearestBody');
+  if (!event || event._dist == null) {
+    body.innerHTML =
+      '<p class="nearestHint">Attiva la posizione per vedere l\'evento più vicino a te.</p>';
+    return;
+  }
+  body.innerHTML =
+    `<div class="nearGrid">` +
+    `<div><span>Distanza</span><b>${event._dist.toFixed(1)} km ${event._dir}</b></div>` +
+    `<div><span>Magnitudo</span><b>M ${event.mag.toFixed(1)}</b></div>` +
+    `<div><span>Ora</span><b>${fmtTime(event.time)}</b></div>` +
+    `<div><span>Tempo trascorso</span><b>${timeAgo(event.time)}</b></div>` +
+    `</div>` +
+    `<p class="nearPlace">${event.place}</p>`;
+}
+
+// Banner "La tua posizione". `pos` è null se la posizione non è nota.
+export function renderBanner(pos) {
+  const banner = $('posBanner');
+  if (!pos) {
+    banner.hidden = true;
+    return;
+  }
+  banner.hidden = false;
+  $('posCoords').textContent = `${pos.lat.toFixed(4)}, ${pos.lon.toFixed(4)}`;
+  $('posAccuracy').textContent =
+    pos.accuracy != null ? `±${Math.round(pos.accuracy)} m` : '—';
+  $('posUpdated').textContent = fmtTime(pos.timestamp);
+  // Comune/Provincia richiederebbero un reverse-geocoding su server esterno:
+  // per la promessa di privacy restano non rilevati in questa modalità.
+  $('posComune').textContent = pos.comune || '—';
+  $('posProvincia').textContent = pos.provincia || '—';
 }

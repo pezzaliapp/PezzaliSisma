@@ -12,17 +12,26 @@ ed è installabile come app (PWA).
 
 ---
 
-## Caratteristiche (Milestone 1)
+## Caratteristiche (Milestone 1 + 1.1)
 
-- 🗺️ Mappa interattiva **Leaflet** con tiles OpenStreetMap
+- 🗺️ Mappa interattiva **Leaflet** (internalizzato in `vendor/`, niente CDN) con tiles OpenStreetMap
 - 🌍 Tre viste: **Mondo**, **Italia**, **Mediterraneo**
 - 📡 Caricamento dati reali da **USGS** (24 ore / 7 giorni / 30 giorni)
-- 📍 Marker proporzionali alla magnitudo con **popup** di dettaglio
+- 📍 Marker proporzionali alla magnitudo con **popup** di dettaglio completo
 - 📋 **Elenco** degli ultimi eventi (click per centrare la mappa)
-- 🎚️ **Filtri base**: periodo, vista geografica, magnitudo minima
+- 🎚️ **Filtri**: periodo, vista geografica, magnitudo minima, distanza da me
 - 📊 Quadro statistico rapido (conteggio, magnitudo massima, ultimo evento)
+- 📌 **Geolocalizzazione** (Milestone 1.1):
+  - «Usa la mia posizione», «Centra su di me», «Segui la mia posizione» (`watchPosition`)
+  - marker blu, cerchio di accuratezza GPS, cerchi di distanza **25/50/100/200 km**
+  - distanza e **direzione cardinale** (N/NE/E/SE/S/SW/W/NW) per ogni evento
+  - colore di **prossimità** (scala fredda) distinto dalla magnitudo (scala calda)
+  - card **«Terremoto più vicino»** e banner **«La tua posizione»**
+  - reverse geocoding **opt-in** (Comune/Provincia) via OSM Nominatim, solo su richiesta
+  - **«Cancella posizione»** per rimuovere ogni dato locale
 - ⚡ Auto-aggiornamento ogni 5 minuti
-- 📦 **PWA installabile** con service worker e funzionamento offline (ultimo dato noto)
+- 📦 **PWA installabile** con service worker e funzionamento offline (ultimo dato noto + mappa)
+- 🔒 **Privacy-first**: la posizione resta sul dispositivo, mai trasmessa a server di PezzaliSisma
 - 🧱 **100% statica**, nessun backend, nessuna build: solo HTML, CSS e JavaScript modulare
 
 ---
@@ -46,15 +55,18 @@ PezzaliSisma/
 ├─ sw.js                   # service worker (cache shell/dati/tiles)
 ├─ icon.svg                # icona dell'app
 ├─ README.md
+├─ vendor/leaflet/         # Leaflet 1.9.4 internalizzato (css, js, images)
 └─ src/                    # logica modulare (ES modules)
    ├─ main.js              # bootstrap e orchestrazione
-   ├─ config.js            # endpoint USGS, regioni, costanti
+   ├─ config.js            # endpoint USGS, regioni, fasce distanza, costanti
    ├─ state.js             # stato applicativo centralizzato
    ├─ data.js              # fetch + normalizzazione eventi
-   ├─ filters.js           # applicazione filtri e statistiche
-   ├─ geo.js               # utilità geografiche (distanza, bounds, formattazione)
-   ├─ map.js               # gestione mappa e marker Leaflet
-   └─ ui.js                # rendering lista, statistiche e stato
+   ├─ filters.js           # filtri (regione/mag/distanza), distanza/direzione, più vicino
+   ├─ geo.js               # utilità geografiche (distanza, bearing, prossimità, tempo)
+   ├─ geolocation.js       # Geolocation API + persistenza localStorage (device-only)
+   ├─ geocode.js           # reverse geocoding opt-in (OSM Nominatim)
+   ├─ map.js               # mappa, marker eventi, marker utente, cerchi, popup
+   └─ ui.js                # rendering lista, statistiche, banner, card più vicino
 ```
 
 ---
@@ -97,6 +109,14 @@ sottopercorso come quello di GitHub Pages.
 - Tema chiaro/scuro, internazionalizzazione (IT/EN)
 
 > Non sono previste funzioni di previsione sismica in nessuna fase.
+
+---
+
+## Privacy della posizione
+
+- Le coordinate GPS sono usate **solo sul dispositivo** e salvate esclusivamente in `localStorage`. Non esiste alcun backend di PezzaliSisma: le coordinate non vengono mai inviate a server dell'app.
+- **Comune e Provincia** non sono rilevati automaticamente. Solo se premi **«Rileva Comune e Provincia»** viene inviata **una singola** richiesta al servizio pubblico **OpenStreetMap Nominatim** con le coordinate, previo consenso mostrato alla prima attivazione. Il risultato è salvato solo sul dispositivo e non viene richiesto di nuovo finché non ti sposti di oltre **500 metri** o non richiedi un aggiornamento.
+- **«Cancella posizione»** rimuove tutte le informazioni di posizione memorizzate localmente (coordinate, comune/provincia e consenso).
 
 ---
 
