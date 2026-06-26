@@ -24,8 +24,10 @@ export async function shareText(text) {
   await navigator.share({ text });
 }
 
-// Copia il testo negli appunti; ritorna true se riuscito. Fallback con textarea
-// temporanea + execCommand quando l'API Clipboard non è disponibile.
+// Copia il testo negli appunti; ritorna true se riuscito.
+// 1) API Clipboard (contesto sicuro + gesto utente); 2) fallback robusto
+// compatibile con iOS Safari / PWA: textarea NON readonly, selezione esplicita
+// via Range/Selection + setSelectionRange, poi execCommand('copy').
 export async function copyText(text) {
   if (canClipboard()) {
     try {
@@ -35,15 +37,41 @@ export async function copyText(text) {
       /* prova il fallback sottostante */
     }
   }
+  return legacyCopy(text);
+}
+
+function legacyCopy(text) {
   try {
     const ta = document.createElement('textarea');
     ta.value = text;
-    ta.setAttribute('readonly', '');
+    // iOS Safari non copia da textarea readonly: lasciarla modificabile.
+    ta.readOnly = false;
+    ta.contentEditable = 'true';
     ta.style.position = 'fixed';
+    ta.style.top = '0';
+    ta.style.left = '0';
+    ta.style.width = '1px';
+    ta.style.height = '1px';
+    ta.style.padding = '0';
+    ta.style.border = 'none';
     ta.style.opacity = '0';
+    ta.style.fontSize = '16px'; // evita lo zoom automatico su iOS
     document.body.appendChild(ta);
-    ta.select();
+    ta.focus();
+
+    // Selezione esplicita: richiesta da iOS per far funzionare execCommand.
+    const sel = (typeof window !== 'undefined' && window.getSelection) ? window.getSelection() : null;
+    if (sel && typeof document.createRange === 'function') {
+      const range = document.createRange();
+      range.selectNodeContents(ta);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+    if (typeof ta.setSelectionRange === 'function') ta.setSelectionRange(0, text.length);
+    else if (typeof ta.select === 'function') ta.select();
+
     const ok = typeof document.execCommand === 'function' ? document.execCommand('copy') : false;
+    if (sel && typeof sel.removeAllRanges === 'function') sel.removeAllRanges();
     document.body.removeChild(ta);
     return !!ok;
   } catch {
@@ -90,7 +118,16 @@ export function initShare() {
     copyBtn.addEventListener('click', async () => {
       const text = input.value.trim() || DEFAULT_MESSAGE;
       const ok = await copyText(text);
-      setMsg(ok ? 'Messaggio copiato negli appunti.' : 'Copia non riuscita: seleziona e copia manualmente.', !ok);
+      if (ok) {
+        setMsg('Messaggio copiato.');
+      } else {
+        // Ultima possibilità: seleziona il testo così l'utente può copiarlo a mano.
+        try {
+          input.focus();
+          if (typeof input.select === 'function') input.select();
+        } catch { /* ignora */ }
+        setMsg('Copia non riuscita: seleziona e copia manualmente.', true);
+      }
     });
   }
 }
