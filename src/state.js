@@ -14,6 +14,8 @@ export const state = {
   follow: false,    // "Segui la mia posizione" attivo (watchPosition)
   watchId: null,    // id del watch della Geolocation API
 
+  places: [],       // "luoghi importanti" (La mia famiglia) — SOLO su questo dispositivo
+
   filters: {
     period: 'week',   // day | week | month
     minMag: 0,        // magnitudo minima

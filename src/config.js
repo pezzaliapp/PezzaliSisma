@@ -71,6 +71,10 @@ export const PROXIMITY_COLORS = {
 // Chiave localStorage per l'ultima posizione nota (SOLO su questo dispositivo).
 export const STORAGE_KEY = 'pezzalisisma:userpos';
 
+// Chiave localStorage dei "luoghi importanti" — La mia famiglia (A2).
+// Salvati SOLO su questo dispositivo, mai trasmessi.
+export const PLACES_KEY = 'pezzalisisma:places';
+
 // Reverse geocoding OPZIONALE e su richiesta esplicita (servizio pubblico OSM).
 export const NOMINATIM_REVERSE = 'https://nominatim.openstreetmap.org/reverse';
 // Chiave localStorage del consenso una-tantum al reverse geocoding.

@@ -34,6 +34,7 @@ import { initTimeline, setTimelineRange } from './timeline.js';
 import { refreshRadar } from './sismaradar/radar.js';
 import { initInfo } from './info.js';
 import { initPrepare } from './prepare.js';
+import { initPlaces } from './places.js';
 import {
   loadStoredPosition,
   storePosition,
@@ -402,6 +403,7 @@ window.addEventListener('load', () => {
   initTimeline(onTimelineChange);
   initInfo();
   initPrepare();
+  initPlaces();
 
   // Badge connessione: aggiorna l'attività al variare di online/offline.
   window.addEventListener('online', renderActivityNow);

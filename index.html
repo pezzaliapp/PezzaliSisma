@@ -298,6 +298,7 @@
         <button class="prepTab" type="button" role="tab" id="tabPrima" aria-controls="panelPrima" aria-selected="true">Prima</button>
         <button class="prepTab" type="button" role="tab" id="tabDurante" aria-controls="panelDurante" aria-selected="false" tabindex="-1">Durante</button>
         <button class="prepTab" type="button" role="tab" id="tabDopo" aria-controls="panelDopo" aria-selected="false" tabindex="-1">Dopo</button>
+        <button class="prepTab" type="button" role="tab" id="tabFamiglia" aria-controls="panelFamiglia" aria-selected="false" tabindex="-1">La mia famiglia</button>
         <button class="prepTab" type="button" role="tab" id="tabNumeri" aria-controls="panelNumeri" aria-selected="false" tabindex="-1">Numeri utili</button>
       </div>
 
@@ -344,6 +345,47 @@
             <li><strong>Usa il telefono solo se necessario</strong>, per non sovraccaricare le linee.</li>
             <li><strong>Segui le indicazioni degli enti ufficiali</strong> e allontanati da edifici lesionati.</li>
           </ul>
+        </section>
+
+        <!-- LA MIA FAMIGLIA: luoghi importanti (solo localStorage) -->
+        <section id="panelFamiglia" class="prepPanelTab" role="tabpanel" aria-labelledby="tabFamiglia" hidden>
+          <p class="prepPrivacy">I luoghi sono salvati <strong>solo su questo dispositivo</strong> e non vengono mai inviati.</p>
+          <form id="placeForm" class="placeForm">
+            <label>Tipo
+              <select id="placeLabel">
+                <option value="Casa">Casa</option>
+                <option value="Lavoro">Lavoro</option>
+                <option value="Scuola">Scuola</option>
+                <option value="Genitori">Genitori</option>
+                <option value="Altro">Altro</option>
+              </select>
+            </label>
+            <label>Nome (facoltativo)
+              <input id="placeName" type="text" maxlength="40" placeholder="Es. Casa dei nonni" />
+            </label>
+            <div class="placeCoords">
+              <label>Latitudine
+                <input id="placeLat" type="number" step="any" min="-90" max="90" inputmode="decimal" placeholder="es. 45.4642" />
+              </label>
+              <label>Longitudine
+                <input id="placeLon" type="number" step="any" min="-180" max="180" inputmode="decimal" placeholder="es. 9.1900" />
+              </label>
+            </div>
+            <button id="placeUsePos" type="button" class="ghost">Usa la mia posizione attuale</button>
+            <label>Note (facoltative)
+              <input id="placeNote" type="text" maxlength="120" />
+            </label>
+            <div id="placeMsg" class="placeMsg" role="status" aria-live="polite"></div>
+            <div class="placeFormBtns">
+              <button id="placeSave" type="submit">Salva luogo</button>
+              <button id="placeCancel" type="button" class="ghost" hidden>Annulla</button>
+            </div>
+          </form>
+          <div class="placeListHead">
+            <h3>Luoghi salvati</h3>
+            <button id="placeClear" type="button" class="ghost danger" hidden>Cancella tutti</button>
+          </div>
+          <div id="placeList" class="placeList"></div>
         </section>
 
         <!-- NUMERI UTILI -->
