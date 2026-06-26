@@ -348,14 +348,8 @@ function wireControls() {
     refreshView(true);
   });
 
-  $('markersChk').addEventListener('change', e => {
-    state.filters.showMarkers = e.target.checked;
-    redrawMapLayers();
-  });
-  $('heatChk').addEventListener('change', e => {
-    state.filters.showHeat = e.target.checked;
-    redrawMapLayers();
-  });
+  wireLayerToggle('markersToggle', 'showMarkers');
+  wireLayerToggle('heatToggle', 'showHeat');
 
   $('distanceSelect').addEventListener('change', onDistanceChange);
   $('locateBtn').addEventListener('click', onLocateClick);
@@ -363,6 +357,25 @@ function wireControls() {
   $('followChk').addEventListener('change', onFollowToggle);
   $('geocodeBtn').addEventListener('click', onGeocodeClick);
   $('clearPosBtn').addEventListener('click', onClearPosClick);
+}
+
+// Pulsante toggle livello mappa (Marker / Heatmap): touch-friendly, stato visibile.
+function wireLayerToggle(btnId, filterKey) {
+  const btn = $(btnId);
+  if (!btn) return;
+  const syncUI = () => {
+    const on = !!state.filters[filterKey];
+    btn.classList.toggle('is-on', on);
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    const lab = btn.querySelector('.layerState');
+    if (lab) lab.textContent = on ? 'ON' : 'OFF';
+  };
+  syncUI();
+  btn.addEventListener('click', () => {
+    state.filters[filterKey] = !state.filters[filterKey];
+    syncUI();
+    redrawMapLayers();
+  });
 }
 
 // Registra il service worker (solo su origini sicure, non da file://).
