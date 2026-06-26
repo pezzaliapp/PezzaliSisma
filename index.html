@@ -300,6 +300,7 @@
         <button class="prepTab" type="button" role="tab" id="tabDopo" aria-controls="panelDopo" aria-selected="false" tabindex="-1">Dopo</button>
         <button class="prepTab" type="button" role="tab" id="tabFamiglia" aria-controls="panelFamiglia" aria-selected="false" tabindex="-1">La mia famiglia</button>
         <button class="prepTab" type="button" role="tab" id="tabScheda" aria-controls="panelScheda" aria-selected="false" tabindex="-1">Scheda personale</button>
+        <button class="prepTab" type="button" role="tab" id="tabStoBene" aria-controls="panelStoBene" aria-selected="false" tabindex="-1">Sto bene</button>
         <button class="prepTab" type="button" role="tab" id="tabNumeri" aria-controls="panelNumeri" aria-selected="false" tabindex="-1">Numeri utili</button>
       </div>
 
@@ -458,6 +459,20 @@
               <button id="cardClear" type="button" class="ghost danger">Cancella scheda</button>
             </div>
           </form>
+          </div>
+        </section>
+
+        <!-- STO BENE: condivisione volontaria, nessun invio automatico -->
+        <section id="panelStoBene" class="prepPanelTab" role="tabpanel" aria-labelledby="tabStoBene" hidden>
+          <p class="prepPrivacy">Nessun messaggio viene inviato automaticamente. La condivisione avviene <strong>solo se scegli un'app</strong> dal menu del dispositivo. PezzaliSisma <strong>non invia nulla</strong> ai propri server.</p>
+          <label>Messaggio
+            <textarea id="shareInput" rows="3" maxlength="280">Sto bene. Messaggio condiviso tramite PezzaliSisma.</textarea>
+          </label>
+          <p id="shareUnavail" class="cardLockUnavail" hidden>La condivisione diretta non è disponibile su questo browser: usa «Copia messaggio».</p>
+          <div id="shareMsg" class="placeMsg" role="status" aria-live="polite"></div>
+          <div class="placeFormBtns">
+            <button id="shareShare" type="button" hidden>Condividi</button>
+            <button id="shareCopy" type="button" class="ghost">Copia messaggio</button>
           </div>
         </section>
 
