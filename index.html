@@ -86,17 +86,24 @@
           </section>
         </div>
 
-        <!-- 5. SISMARADAR (solo card segnaposto, motore non ancora implementato) -->
-        <section class="card sismaradar" aria-label="SismaRadar (in preparazione)">
+        <!-- 5. SISMARADAR (lettura statistica di eventi già registrati) -->
+        <section class="card sismaradar" aria-label="SismaRadar" aria-live="polite">
           <h2>SismaRadar</h2>
-          <p class="srStatus">In preparazione</p>
-          <div class="srSlots">
-            <div><span>Indice</span><b>—</b></div>
-            <div><span>Trend</span><b>—</b></div>
-            <div><span>Sciami</span><b>—</b></div>
-            <div><span>Cluster</span><b>—</b></div>
+          <div class="srTop">
+            <span id="srIndex" class="srIndex">—</span>
+            <span id="srTrend" class="srTrend">trend: —</span>
           </div>
-          <p class="srNote">Modulo di analisi statistica in arrivo. Non costituirà una previsione sismica.</p>
+          <div class="srSlots">
+            <div><span>Eventi</span><b id="srCount">—</b></div>
+            <div><span>Mag. media</span><b id="srMeanMag">—</b></div>
+            <div><span>Mag. max</span><b id="srMaxMag">—</b></div>
+            <div><span>Prof. media</span><b id="srMeanDepth">—</b></div>
+            <div><span>Superficiali ≤10 km</span><b id="srShallow">—</b></div>
+            <div><span>Sciami/cluster</span><b id="srClusters">—</b></div>
+          </div>
+          <p id="srExplain" class="srExplain">—</p>
+          <p id="srUpdated" class="srUpdated">—</p>
+          <p class="srNote">L'indicatore è ottenuto da analisi statistiche di eventi già registrati e non costituisce una previsione sismica né un'allerta ufficiale.</p>
         </section>
 
       </div>

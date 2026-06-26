@@ -91,13 +91,20 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible,su
 .miniGrid div{background:#0d1324;border:1px solid var(--line);border-radius:10px;padding:8px}
 .miniGrid span{display:block;font-size:10px;color:var(--muted);text-transform:uppercase}
 .miniGrid b{font-size:18px}
-/* SismaRadar segnaposto */
-.sismaradar .srStatus{display:inline-block;margin:0 0 10px;padding:3px 10px;border-radius:999px;background:#23304a;color:#cfe0ff;font-size:13px;font-weight:700}
-.srSlots{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-.srSlots div{background:#0d1324;border:1px dashed var(--line);border-radius:10px;padding:8px}
+/* SismaRadar */
+.srTop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.srIndex{display:inline-block;padding:4px 12px;border-radius:999px;font-size:14px;font-weight:700;background:#23304a;color:#cfe0ff;border:1px solid var(--line)}
+.srIndex.normale{background:#173a2a;color:#74e0a8;border-color:#2b7a52}
+.srIndex.osservare{background:#2a230d;color:#ffe7ad;border-color:#6e5a27}
+.srIndex.elevata{background:#3a1717;color:#ff9a9a;border-color:#7a2b2b}
+.srTrend{font-size:13px;color:var(--muted)}
+.srSlots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.srSlots div{background:#0d1324;border:1px solid var(--line);border-radius:10px;padding:8px}
 .srSlots span{display:block;font-size:10px;color:var(--muted);text-transform:uppercase}
-.srSlots b{font-size:16px;color:var(--muted)}
-.srNote{margin:10px 0 0;font-size:12px;color:var(--muted)}
+.srSlots b{font-size:15px}
+.srExplain{margin:10px 0 0;font-size:13px;line-height:1.45}
+.srUpdated{margin:6px 0 0;font-size:12px;color:var(--muted)}
+.srNote{margin:10px 0 0;font-size:11px;color:var(--muted);line-height:1.4;border-top:1px solid var(--line);padding-top:8px}
 /* Pulsanti a tutta larghezza nelle card */
 .fullBtn{width:100%;margin-top:10px}
 .importantBody .nearGrid,.nearestBody .nearGrid{grid-template-columns:1fr 1fr}

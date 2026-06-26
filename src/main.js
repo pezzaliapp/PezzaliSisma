@@ -31,6 +31,7 @@ import {
 import { renderActivity } from './dashboard.js';
 import { refreshOverview } from './overview.js';
 import { initTimeline, setTimelineRange } from './timeline.js';
+import { refreshRadar } from './sismaradar/radar.js';
 import {
   loadStoredPosition,
   storePosition,
@@ -173,6 +174,14 @@ async function loadData() {
   }
   refreshView(true); // nuovo dataset: ripristina cursore e intervallo timeline
   refreshOverview(); // "Situazione generale" Italia/Mondo (USGS 24h), in parallelo
+  // SismaRadar: lettura statistica dell'area nella finestra corrente.
+  refreshRadar({
+    raw: state.raw,
+    region: state.filters.region,
+    period: state.filters.period,
+    source: state.activeSource,
+    lastUpdate: state.lastUpdate
+  });
 }
 
 // Applica una nuova posizione utente (da richiesta singola o da watch).

@@ -82,6 +82,9 @@ PezzaliSisma/
    ├─ dashboard.js         # card "Attività attuale" (eventi, mag max, sorgente, connessione, fallback)
    ├─ overview.js          # "Situazione generale" Italia/Mondo (ultime 24h, USGS)
    ├─ timeline.js          # timeline + playback temporale (24h/7g/30g/365g)
+   ├─ sismaradar/          # SismaRadar: lettura statistica (NON previsione)
+   │  ├─ engine.js         #   funzioni pure (analyze/classify/explain)
+   │  └─ radar.js          #   conteggio finestra precedente + render card
    ├─ map.js               # mappa, marker eventi, marker utente, cerchi, popup, alone "Nuovo"
    └─ ui.js                # rendering lista, statistiche, banner, card più vicino
 ```

@@ -2,6 +2,14 @@
 
 Tutte le modifiche rilevanti del progetto PezzaliSisma.
 
+## Milestone C3 — SismaRadar base
+- Card SismaRadar trasformata da segnaposto a **pannello di analisi statistica** di eventi **già registrati** (nessuna previsione, nessun allarme).
+- Calcoli sulla vista/finestra corrente: numero eventi, magnitudo massima e media, profondità media, eventi superficiali ≤10 km, **concentrazione geografica** (griglia ~1°), **sciami/cluster** semplici.
+- **Variazione frequenza** rispetto alla **finestra precedente reale** (USGS `/count`, INGV `/query`); se non disponibile mostra "dato non disponibile" senza inventare valori.
+- Indicatore: **Normale / Da osservare / Attività elevata** (soglie trasparenti: elevata = variazione ≥ +50% e (evento forte per l'area o concentrazione ≥50%); da osservare = variazione ≥ +25% o concentrazione ≥40%).
+- Spiegazione testuale **prudente** (solo frasi descrittive ammesse) e **frase obbligatoria** sempre presente: «L'indicatore è ottenuto da analisi statistiche di eventi già registrati e non costituisce una previsione sismica né un'allerta ufficiale.»
+- Indipendente dai filtri magnitudo/distanza della dashboard; nessuna modifica a dashboard/geolocalizzazione/mappa mobile/timeline/sorgenti.
+
 ## Milestone C1 — Timeline e playback
 - **Periodo 365 giorni**: nuova opzione "Ultimi 365 giorni". A 30 giorni si usano i feed sommario USGS; a 365 giorni si passa all'endpoint **FDSN** (USGS) e a INGV FDSN con **soglia di magnitudo automatica dichiarata**: **Mondo ≥ 4.0**, **Italia/Mediterraneo ≥ 2.5** (per limitare i dati). Nota visibile in UI quando attivo.
 - **Timeline interattiva** con **playback** leggero a passi discreti (slider tempo + play/pausa): il cursore mostra gli eventi fino all'istante scelto; "Tutti" mostra l'intero intervallo. Durante scrub/playback la vista non si riadatta (niente salti).
