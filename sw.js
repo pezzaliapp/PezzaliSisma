@@ -6,7 +6,7 @@
 //  - dati USGS: network-first con fallback alla cache (ultimo dato noto offline)
 //  - tiles mappa / Leaflet CDN: cache-first (le tiles sono immutabili)
 
-const VERSION = 'v6';
+const VERSION = 'v7';
 const SHELL_CACHE = 'sisma-shell-' + VERSION;
 const DATA_CACHE = 'sisma-data-' + VERSION;
 const TILE_CACHE = 'sisma-tiles-' + VERSION;
@@ -24,6 +24,9 @@ const SHELL_ASSETS = [
   './src/state.js',
   './src/geo.js',
   './src/data.js',
+  './src/sources/http.js',
+  './src/sources/usgs.js',
+  './src/sources/ingv.js',
   './src/filters.js',
   './src/geolocation.js',
   './src/geocode.js',
@@ -78,8 +81,8 @@ self.addEventListener('fetch', event => {
 
   const url = new URL(request.url);
 
-  // Dati sismici USGS → network-first.
-  if (url.hostname === 'earthquake.usgs.gov') {
+  // Dati sismici (USGS, INGV) → network-first con fallback all'ultimo dato noto.
+  if (url.hostname === 'earthquake.usgs.gov' || url.hostname === 'webservices.ingv.it') {
     event.respondWith(networkFirst(request, DATA_CACHE));
     return;
   }

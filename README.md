@@ -20,7 +20,10 @@ ed è installabile come app (PWA).
 
 - 🗺️ Mappa interattiva **Leaflet** (internalizzato in `vendor/`, niente CDN) con tiles OpenStreetMap
 - 🌍 Tre viste: **Mondo**, **Italia**, **Mediterraneo**
-- 📡 Caricamento dati reali da **USGS** (24 ore / 7 giorni / 30 giorni)
+- 📡 **Sorgenti dati multiple** (Milestone 2): **USGS** (globale) + **INGV** (Italia/Mediterraneo)
+  - strategia **Auto**: Italia/Mediterraneo → INGV, Mondo → USGS, con **fallback automatico**
+  - selettore manuale **Auto / USGS / INGV**, **fonte indicata per ogni evento**
+  - normalizzazione tra schemi diversi, nessun dato inventato, nessun backend
 - 📍 Marker proporzionali alla magnitudo con **popup** di dettaglio completo
 - 📋 **Elenco** degli ultimi eventi (click per centrare la mappa)
 - 🎚️ **Filtri**: periodo, vista geografica, magnitudo minima, distanza da me
@@ -64,7 +67,11 @@ PezzaliSisma/
    ├─ main.js              # bootstrap e orchestrazione
    ├─ config.js            # endpoint USGS, regioni, fasce distanza, costanti
    ├─ state.js             # stato applicativo centralizzato
-   ├─ data.js              # fetch + normalizzazione eventi
+   ├─ data.js              # orchestratore sorgenti (strategia Auto + fallback)
+   ├─ sources/             # adapter per fonte (modello normalizzato unico)
+   │  ├─ http.js           #   fetch JSON con timeout (AbortController)
+   │  ├─ usgs.js           #   USGS (feed globali)
+   │  └─ ingv.js           #   INGV (FDSN, Italia/Mediterraneo)
    ├─ filters.js           # filtri (regione/mag/distanza), distanza/direzione, più vicino
    ├─ geo.js               # utilità geografiche (distanza, bearing, prossimità, tempo)
    ├─ geolocation.js       # Geolocation API + persistenza localStorage (device-only)

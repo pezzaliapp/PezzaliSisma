@@ -2,6 +2,16 @@
 
 Tutte le modifiche rilevanti del progetto PezzaliSisma.
 
+## Milestone 2 — Sorgenti dati multiple (USGS + INGV)
+- Layer **adapter sorgenti** (`src/sources/`) con modello evento normalizzato unico per tutte le fonti.
+- **USGS** (globale, stabile) e **INGV** (forte su Italia/Mediterraneo), entrambe accessibili da PWA statica (CORS).
+- **Strategia Auto**: Italia/Mediterraneo → INGV primaria, Mondo → USGS primaria, con **fallback incrociato automatico**. Selettore manuale **Auto / USGS / INGV** (la scelta manuale è rispettata, senza fallback).
+- **Normalizzazione** tra schemi diversi: `time` INGV (ISO UTC senza `Z`) → epoch ms; link ufficiale INGV costruito da `eventId`; campi comuni garantiti.
+- **Indicazione fonte per ogni evento**: tag nella lista, "Fonte" nel popup, badge "Fonte attiva" con avviso di fallback.
+- **Gestione errori chiara**: timeout (`AbortController`), rete, risposta non valida, entrambe le fonti non disponibili.
+- Service worker: network-first anche per INGV (ultimo dato noto offline).
+- Nessun merge/deduplica (una fonte per volta), nessun backend, nessun dato inventato.
+
 ## Milestone 1.2 — Fix mobile scroll mappa
 - **Fix mobile iOS: la mappa non blocca più lo scroll della pagina.**
 - Su mobile la mappa, di default, **non cattura** lo scroll verticale: la pagina scorre normalmente.

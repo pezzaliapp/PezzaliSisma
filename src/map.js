@@ -114,7 +114,9 @@ function popupHtml(e) {
     rows.push(`<b>Direzione:</b> ${e._dir}`);
   }
   if (e.url) {
-    rows.push(`<a href="${e.url}" target="_blank" rel="noopener">Scheda ufficiale USGS</a>`);
+    rows.push(
+      `<a href="${e.url}" target="_blank" rel="noopener">Scheda ufficiale ${escapeHtml(e.source)}</a>`
+    );
   }
   return rows.join('<br>');
 }

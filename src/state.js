@@ -15,8 +15,10 @@ export const state = {
     period: 'week',   // day | week | month
     minMag: 0,        // magnitudo minima
     region: 'italy',  // world | italy | mediterranean
-    maxDistance: 0    // 0 = tutte; oppure 25 | 50 | 100 | 200 (km)
+    maxDistance: 0,   // 0 = tutte; oppure 25 | 50 | 100 | 200 (km)
+    source: 'auto'    // auto | USGS | INGV
   },
 
-  lastUpdate: null  // timestamp dell'ultimo caricamento dati riuscito
+  activeSource: null, // fonte effettivamente usata nell'ultimo caricamento
+  lastUpdate: null    // timestamp dell'ultimo caricamento dati riuscito
 };

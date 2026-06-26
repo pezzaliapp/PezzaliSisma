@@ -2,7 +2,7 @@
 
 import { REFRESH_MS, GEOCODE_MIN_MOVE_M } from './config.js';
 import { state } from './state.js';
-import { fetchEvents } from './data.js';
+import { loadEvents } from './data.js';
 import { haversineKm } from './geo.js';
 import {
   decorate,
@@ -25,7 +25,8 @@ import {
   renderList,
   renderStats,
   renderNearest,
-  renderBanner
+  renderBanner,
+  renderSourceInfo
 } from './ui.js';
 import {
   loadStoredPosition,
@@ -63,16 +64,32 @@ function refreshView() {
   renderBanner(state.userPos);
 }
 
-// Scarica i dati dalla sorgente per il periodo selezionato.
+// Traduce un errore tecnico in un messaggio chiaro per l'utente.
+function errorMessage(err) {
+  if (!err) return 'errore sconosciuto';
+  if (err.message === 'timeout') return 'tempo scaduto (timeout)';
+  return err.message;
+}
+
+// Scarica i dati applicando strategia sorgente e fallback automatico.
 async function loadData() {
   setStatus('Carico dati reali…');
-  try {
-    state.raw = await fetchEvents(state.filters.period);
+  const res = await loadEvents({
+    period: state.filters.period,
+    region: state.filters.region,
+    source: state.filters.source
+  });
+
+  state.raw = res.events;
+  state.activeSource = res.activeSource;
+  renderSourceInfo(res);
+
+  if (res.activeSource) {
     state.lastUpdate = Date.now();
-    setStatus('Aggiornato: ' + new Date().toLocaleTimeString('it-IT'));
-  } catch (err) {
-    state.raw = [];
-    setStatus('Errore dati: ' + err.message + '. Riprova o avvia da HTTPS.');
+    const fb = res.fellBack ? ` · fallback da ${res.triedFirst}` : '';
+    setStatus('Aggiornato: ' + new Date().toLocaleTimeString('it-IT') + fb);
+  } else {
+    setStatus('Nessuna fonte disponibile: ' + errorMessage(res.error) + '. Riprova.');
   }
   refreshView();
 }
@@ -209,7 +226,12 @@ function wireControls() {
 
   $('areaSelect').addEventListener('change', e => {
     state.filters.region = e.target.value;
-    refreshView();
+    loadData(); // la vista determina fonte (Auto) e bbox INGV: serve un nuovo fetch
+  });
+
+  $('sourceSelect').addEventListener('change', e => {
+    state.filters.source = e.target.value;
+    loadData();
   });
 
   $('magRange').addEventListener('input', e => {

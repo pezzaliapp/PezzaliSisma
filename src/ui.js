@@ -27,11 +27,26 @@ export function renderList(events, onSelect) {
     const div = document.createElement('div');
     div.className = 'event';
     div.innerHTML =
-      `<strong>M ${e.mag.toFixed(1)} — ${e.place}</strong>` +
+      `<strong>M ${e.mag.toFixed(1)} — ${e.place}` +
+      `<span class="srcTag src-${e.source}">${e.source}</span></strong>` +
       `<small>${fmtTime(e.time)} · prof. ${e.depth.toFixed(1)} km${dist}</small>`;
     div.addEventListener('click', () => onSelect(e));
     box.appendChild(div);
   });
+}
+
+// Badge della fonte attiva, con indicazione di eventuale fallback automatico.
+export function renderSourceInfo(res) {
+  const el = document.getElementById('sourceInfo');
+  if (!res || !res.activeSource) {
+    el.textContent = 'Nessuna fonte disponibile.';
+    el.className = 'sourceInfo err';
+    return;
+  }
+  let txt = 'Fonte attiva: ' + res.activeSource;
+  if (res.fellBack) txt += ` (fallback automatico da ${res.triedFirst})`;
+  el.textContent = txt;
+  el.className = 'sourceInfo' + (res.fellBack ? ' warn' : '');
 }
 
 // Aggiorna il riquadro statistiche.

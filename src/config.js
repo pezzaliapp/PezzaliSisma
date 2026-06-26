@@ -29,6 +29,17 @@ export const REGIONS = {
   }
 };
 
+// Sorgente dati INGV (FDSN event): forte copertura su Italia e Mediterraneo.
+export const INGV_EVENT = 'https://webservices.ingv.it/fdsnws/event/1/query';
+// Giorni corrispondenti a ciascun periodo (per costruire le query INGV).
+export const PERIOD_DAYS = { day: 1, week: 7, month: 30 };
+// Limite massimo di eventi richiesti a INGV (FDSN richiede un limit esplicito).
+export const INGV_LIMIT = 3000;
+// Timeout (ms) per ogni richiesta di rete alle sorgenti dati.
+export const REQUEST_TIMEOUT_MS = 12000;
+// Chiavi delle sorgenti selezionabili.
+export const SOURCES = { AUTO: 'auto', USGS: 'USGS', INGV: 'INGV' };
+
 // Intervallo di auto-aggiornamento dei dati (5 minuti).
 export const REFRESH_MS = 5 * 60 * 1000;
 
