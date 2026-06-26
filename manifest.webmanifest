@@ -1,1 +1,29 @@
-{"name":"PezzaliSisma","short_name":"Sisma","start_url":"./index.html","display":"standalone","background_color":"#07111f","theme_color":"#07111f","icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml"}]}
+{
+  "id": "/PezzaliSisma/",
+  "name": "PezzaliSisma — Monitoraggio sismico",
+  "short_name": "Sisma",
+  "description": "PWA gratuita per il monitoraggio sismico in tempo reale con dati pubblici USGS. Non prevede terremoti.",
+  "lang": "it",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#07111f",
+  "theme_color": "#07111f",
+  "categories": ["utilities", "education", "weather"],
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
