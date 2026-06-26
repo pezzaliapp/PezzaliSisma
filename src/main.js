@@ -25,9 +25,9 @@ import {
   renderList,
   renderStats,
   renderNearest,
-  renderBanner,
-  renderSourceInfo
+  renderBanner
 } from './ui.js';
+import { renderDashboard } from './dashboard.js';
 import {
   loadStoredPosition,
   storePosition,
@@ -71,6 +71,18 @@ function errorMessage(err) {
   return err.message;
 }
 
+// Aggiorna il pannello "Stato" usando lo stato corrente + connessione.
+function updateDashboard() {
+  renderDashboard({
+    online: navigator.onLine,
+    activeSource: state.activeSource,
+    fellBack: state.fellBack,
+    triedFirst: state.triedFirst,
+    downloaded: state.raw.length,
+    lastUpdate: state.lastUpdate
+  });
+}
+
 // Scarica i dati applicando strategia sorgente e fallback automatico.
 async function loadData() {
   setStatus('Carico dati reali…');
@@ -82,7 +94,8 @@ async function loadData() {
 
   state.raw = res.events;
   state.activeSource = res.activeSource;
-  renderSourceInfo(res);
+  state.fellBack = res.fellBack;
+  state.triedFirst = res.triedFirst;
 
   if (res.activeSource) {
     state.lastUpdate = Date.now();
@@ -91,6 +104,7 @@ async function loadData() {
   } else {
     setStatus('Nessuna fonte disponibile: ' + errorMessage(res.error) + '. Riprova.');
   }
+  updateDashboard();
   refreshView();
 }
 
@@ -258,6 +272,11 @@ function registerServiceWorker() {
 window.addEventListener('load', () => {
   initMap();
   wireControls();
+
+  // Badge connessione: aggiorna lo stato al variare di online/offline.
+  window.addEventListener('online', updateDashboard);
+  window.addEventListener('offline', updateDashboard);
+  updateDashboard();
 
   // Ripristina l'ultima posizione nota (salvata solo su questo dispositivo).
   const stored = loadStoredPosition();

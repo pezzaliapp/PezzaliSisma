@@ -76,6 +76,7 @@ PezzaliSisma/
    ├─ geo.js               # utilità geografiche (distanza, bearing, prossimità, tempo)
    ├─ geolocation.js       # Geolocation API + persistenza localStorage (device-only)
    ├─ geocode.js           # reverse geocoding opt-in (OSM Nominatim)
+   ├─ dashboard.js         # pannello "Stato" (online/offline, sorgente, conteggi, fallback)
    ├─ map.js               # mappa, marker eventi, marker utente, cerchi, popup
    └─ ui.js                # rendering lista, statistiche, banner, card più vicino
 ```

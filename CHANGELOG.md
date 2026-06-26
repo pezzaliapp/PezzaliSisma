@@ -2,6 +2,12 @@
 
 Tutte le modifiche rilevanti del progetto PezzaliSisma.
 
+## Fase A — Audit UI e dashboard 1.0
+- **Pannello "Stato" (dashboard)**: connessione online/offline (badge), sorgente dati attiva, numero eventi scaricati, ultimo aggiornamento, indicazione di fallback automatico. Stato sorgente consolidato qui (rimosso il riquadro duplicato nei Controlli).
+- **Accessibilità**: focus visibile da tastiera (`:focus-visible`), righe della lista eventi attivabili da tastiera (`role=button`, `tabindex`, Invio/Spazio), `aria-live` su stato e dashboard, `aria-label` sulla mappa, `color-scheme`.
+- **Leggibilità**: contrasto del testo secondario migliorato, target touch ≥44px, spaziature/line-height, `prefers-reduced-motion`.
+- Nessuna nuova funzione avanzata (timeline, heatmap, grafici, ricerca, preferiti, alert, export, SismaRadar non inclusi).
+
 ## Milestone 2 — Sorgenti dati multiple (USGS + INGV)
 - Layer **adapter sorgenti** (`src/sources/`) con modello evento normalizzato unico per tutte le fonti.
 - **USGS** (globale, stabile) e **INGV** (forte su Italia/Mediterraneo), entrambe accessibili da PWA statica (CORS).

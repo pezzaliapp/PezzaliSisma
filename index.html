@@ -6,6 +6,7 @@
   <title>PezzaliSisma — Monitoraggio sismico</title>
   <meta name="description" content="PWA gratuita per il monitoraggio sismico in tempo reale. Dati pubblici USGS. Non prevede terremoti." />
   <meta name="theme-color" content="#07111f" />
+  <meta name="color-scheme" content="dark light" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="icon.svg" />
@@ -37,6 +38,17 @@
 
   <main class="app">
     <aside class="panel">
+      <section class="card dashboard" aria-label="Stato del sistema" aria-live="polite">
+        <h2>Stato</h2>
+        <div class="dashGrid">
+          <div class="dashItem"><span>Connessione</span><b id="dashOnline" class="badge">—</b></div>
+          <div class="dashItem"><span>Sorgente dati</span><b id="dashSource">—</b></div>
+          <div class="dashItem"><span>Eventi scaricati</span><b id="dashCount">—</b></div>
+          <div class="dashItem"><span>Ultimo aggiornamento</span><b id="dashUpdated">—</b></div>
+        </div>
+        <div id="dashFallback" class="dashFallback" hidden></div>
+      </section>
+
       <section class="card">
         <h2>Controlli</h2>
         <label>Periodo
@@ -72,8 +84,7 @@
             <option value="INGV">INGV — Italia/Mediterraneo</option>
           </select>
         </label>
-        <div id="sourceInfo" class="sourceInfo">—</div>
-        <div id="status" class="status">Pronto.</div>
+        <div id="status" class="status" role="status" aria-live="polite">Pronto.</div>
       </section>
 
       <section class="card">
@@ -125,7 +136,7 @@
     </aside>
 
     <section class="mapWrap">
-      <div id="map"></div>
+      <div id="map" role="region" aria-label="Mappa dei terremoti recenti"></div>
       <div class="legend">
         <span><i class="m1"></i> M &lt; 2</span>
         <span><i class="m2"></i> M 2–3</span>
