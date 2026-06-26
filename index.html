@@ -20,6 +20,7 @@
       <p>Monitoraggio sismico reale. Non prevede terremoti: mostra dati, posizione e segnali statistici.</p>
     </div>
     <div class="actions">
+      <button id="infoBtn" type="button" class="ghost">Info</button>
       <button id="refreshBtn" type="button">Aggiorna</button>
     </div>
   </header>
@@ -226,7 +227,61 @@
   <footer>
     Fonti dati: USGS e INGV (GeoJSON/FDSN pubblici). Per uso informativo e didattico. Nessuna previsione sismica.
     La posizione resta sul dispositivo.
+    <a href="#" id="infoLink" class="infoLink">Informazioni</a>
   </footer>
+
+  <!-- Overlay informativo: Come funziona / Fonti dati / Privacy / Limiti scientifici / Allerte Android -->
+  <div id="infoOverlay" class="infoOverlay" role="dialog" aria-modal="true" aria-labelledby="infoTitle" hidden>
+    <div class="infoPanel">
+      <div class="infoHead">
+        <h2 id="infoTitle">Informazioni su PezzaliSisma</h2>
+        <button id="infoClose" type="button" class="infoClose" aria-label="Chiudi">✕</button>
+      </div>
+      <div class="infoBody">
+
+        <section class="infoSec">
+          <h3>Come funziona</h3>
+          <p>PezzaliSisma mostra su una mappa interattiva i terremoti <strong>già avvenuti</strong>, usando dati pubblici aggiornati. Puoi scegliere il <strong>periodo</strong> (24 ore, 7, 30 o 365 giorni), l'<strong>area</strong> (Mondo, Italia, Mediterraneo) e una <strong>magnitudo minima</strong>.</p>
+          <p>La <strong>timeline</strong> con riproduzione fa scorrere gli eventi nel tempo; la <strong>heatmap</strong> evidenzia le zone con maggiore concentrazione e magnitudo. Se attivi la <strong>posizione</strong>, l'app calcola distanza e direzione di ogni evento rispetto a te.</p>
+          <p>Il <strong>SismaRadar</strong> è una lettura statistica degli eventi recenti (numero, magnitudo, profondità, concentrazione, variazione rispetto alla finestra precedente). Serve a descrivere la situazione, <strong>non a prevederla</strong>.</p>
+        </section>
+
+        <section class="infoSec">
+          <h3>Fonti dati</h3>
+          <p>I dati provengono esclusivamente da servizi pubblici e ufficiali:</p>
+          <ul>
+            <li><strong>USGS</strong> — U.S. Geological Survey (feed GeoJSON e FDSN), copertura globale.</li>
+            <li><strong>INGV</strong> — Istituto Nazionale di Geofisica e Vulcanologia (FDSN), forte su Italia e Mediterraneo.</li>
+            <li><strong>OpenStreetMap</strong> — riquadri (tiles) della mappa.</li>
+            <li><strong>OSM Nominatim</strong> — usato solo <em>su richiesta</em> per rilevare Comune e Provincia.</li>
+          </ul>
+          <p>I dati non vengono modificati né integrati con valori inventati. La fonte attiva è sempre indicata per ogni evento.</p>
+        </section>
+
+        <section class="infoSec">
+          <h3>Privacy</h3>
+          <p>PezzaliSisma <strong>non ha un backend</strong> e non raccoglie dati. Le coordinate GPS restano <strong>solo sul dispositivo</strong> (salvate in <code>localStorage</code>) e non vengono mai inviate ai server dell'app.</p>
+          <p>Comune e Provincia non sono rilevati automaticamente: solo se premi «Rileva Comune e Provincia» viene inviata <strong>una singola</strong> richiesta a OpenStreetMap Nominatim. Il risultato resta sul dispositivo.</p>
+          <p>«Cancella posizione» rimuove tutte le informazioni di posizione memorizzate localmente. Nessun tracciamento, nessun cookie di profilazione.</p>
+        </section>
+
+        <section class="infoSec">
+          <h3>Limiti scientifici</h3>
+          <p><strong>I terremoti non sono prevedibili.</strong> Nessun metodo scientifico è oggi in grado di indicare in anticipo luogo, ora e magnitudo di un sisma. PezzaliSisma mostra unicamente eventi già registrati.</p>
+          <p>Il <strong>SismaRadar è descrittivo</strong>: è una sintesi statistica del passato recente, non una previsione né un'allerta ufficiale.</p>
+          <p>I dati possono essere <strong>rivisti</strong> dagli enti dopo le prime stime (magnitudo, profondità, localizzazione). Per allerte e indicazioni ufficiali fai sempre riferimento alla <strong>Protezione Civile</strong> e agli enti competenti.</p>
+        </section>
+
+        <section class="infoSec">
+          <h3>Allerte sismiche su Android</h3>
+          <p>Molti telefoni <strong>Android</strong> includono il <strong>Sistema di allerta terremoti di Android</strong> (Android Earthquake Alerts), realizzato da Google: gli accelerometri degli smartphone rilevano lo scuotimento e, dove il servizio è attivo, possono inviare un avviso nei primi secondi.</p>
+          <p>È un sistema <strong>indipendente da PezzaliSisma</strong>. Per verificarlo apri <strong>Impostazioni → Sicurezza ed emergenza → Avvisi sismici</strong> (la voce e la disponibilità variano per paese, versione di Android e produttore).</p>
+          <p>PezzaliSisma <strong>non invia notifiche né allerte</strong> e non sostituisce i sistemi ufficiali: è uno strumento di consultazione di eventi già avvenuti. Per gli avvisi in tempo reale affidati al sistema del tuo dispositivo e alle autorità competenti.</p>
+        </section>
+
+      </div>
+    </div>
+  </div>
 
   <script src="vendor/leaflet/leaflet.js"></script>
   <script src="vendor/leaflet-heat/leaflet-heat.js"></script>

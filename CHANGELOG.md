@@ -2,6 +2,14 @@
 
 Tutte le modifiche rilevanti del progetto PezzaliSisma.
 
+## Milestone D — Rifinitura PezzaliSisma 1.0
+- **Box informativi** accessibili (overlay senza librerie, pulsante «Info» nell'header e link «Informazioni» nel footer; chiusura con ✕, click esterno o ESC, gestione del focus): **Come funziona**, **Fonti dati**, **Privacy**, **Limiti scientifici** e **Allerte sismiche su Android**.
+- La sezione **Allerte sismiche su Android** spiega il *Sistema di allerta terremoti di Android* (Google), **indipendente** da PezzaliSisma, e ribadisce che l'app **non invia notifiche né allerte** e non sostituisce i sistemi ufficiali.
+- **Fix mobile** (commit dedicato precedente): i controlli «Marker» e «Heatmap» da checkbox a **pulsanti toggle grandi con stato ON/OFF**, touch-friendly, funzionanti anche con mappa bloccata/sbloccata.
+- **Pulizia e coerenza**: descrizione del manifest allineata a USGS **e** INGV; README e CHANGELOG aggiornati; nessuna nuova dipendenza.
+- **Service worker** aggiornato a **v14** con `src/info.js` nel precache (resiliente, network-first HTML, stale-while-revalidate per JS/CSS).
+- Nessuna modifica funzionale a dashboard, timeline, heatmap, SismaRadar, geolocalizzazione o sorgenti dati. Nessuna previsione sismica, nessun dato inventato, nessun backend.
+
 ## Milestone C2 — Heatmap
 - **Layer heatmap** attivabile/disattivabile, **indipendente** dai marker (entrambi selezionabili: "Livelli mappa").
 - **Leaflet.heat internalizzato** in `vendor/leaflet-heat/` (nessun CDN).

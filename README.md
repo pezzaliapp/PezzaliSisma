@@ -1,7 +1,7 @@
 # PezzaliSisma
 
 PWA gratuita per il **monitoraggio sismico in tempo reale**. Mostra i terremoti
-recenti su una mappa interattiva usando i dati pubblici **USGS**.
+recenti su una mappa interattiva usando i dati pubblici **USGS** e **INGV**.
 
 > ⚠️ **PezzaliSisma NON prevede i terremoti.** Mostra unicamente eventi già
 > avvenuti e statistiche descrittive. Nessun metodo scientifico è oggi in grado
@@ -16,7 +16,7 @@ ed è installabile come app (PWA).
 
 ---
 
-## Caratteristiche (Milestone 1 + 1.1)
+## Caratteristiche (PezzaliSisma 1.0)
 
 - 🗺️ Mappa interattiva **Leaflet** (internalizzato in `vendor/`, niente CDN) con tiles OpenStreetMap
 - 🌍 Tre viste: **Mondo**, **Italia**, **Mediterraneo**
@@ -40,6 +40,8 @@ ed è installabile come app (PWA).
   - card **«Terremoto più vicino»** e banner **«La tua posizione»**
   - reverse geocoding **opt-in** (Comune/Provincia) via OSM Nominatim, solo su richiesta
   - **«Cancella posizione»** per rimuovere ogni dato locale
+- 🧭 **SismaRadar** (Milestone C3): lettura **statistica** di eventi già registrati (numero, magnitudo, profondità, concentrazione, variazione vs finestra precedente reale). Indicatore **Normale / Da osservare / Attività elevata** con soglie trasparenti. **Non è una previsione né un'allerta.**
+- ℹ️ **Box informativi** (Milestone D): overlay accessibile (pulsante «Info» / link «Informazioni», chiusura con ✕/click esterno/ESC) con **Come funziona**, **Fonti dati**, **Privacy**, **Limiti scientifici** e **Allerte sismiche su Android**.
 - ⚡ Auto-aggiornamento ogni 5 minuti
 - 📦 **PWA installabile** con service worker e funzionamento offline (ultimo dato noto + mappa)
 - 🔒 **Privacy-first**: la posizione resta sul dispositivo, mai trasmessa a server di PezzaliSisma
@@ -50,9 +52,9 @@ ed è installabile come app (PWA).
 ## Stack tecnico
 
 - **Vanilla JavaScript** organizzato in moduli ES nativi (`<script type="module">`) — nessun build step
-- **Leaflet 1.9** via CDN per la mappa
-- **Service Worker** scritto a mano con caching differenziato (shell / dati / tiles)
-- Dati: [USGS Earthquake GeoJSON Feeds](https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php)
+- **Leaflet 1.9.4** + **Leaflet.heat 0.2.0** **internalizzati** in `vendor/` (nessun CDN)
+- **Service Worker** scritto a mano (v14) con caching differenziato: network-first per HTML e dati, stale-while-revalidate per JS/CSS, cache-first per le tiles; precache resiliente
+- Dati: [USGS Earthquake Feeds/FDSN](https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php) e [INGV FDSN](https://webservices.ingv.it/) — pubblici, accessibili da PWA statica (CORS)
 
 ---
 
@@ -66,7 +68,9 @@ PezzaliSisma/
 ├─ sw.js                   # service worker (cache shell/dati/tiles)
 ├─ icon.svg                # icona dell'app
 ├─ README.md
+├─ CHANGELOG.md
 ├─ vendor/leaflet/         # Leaflet 1.9.4 internalizzato (css, js, images)
+├─ vendor/leaflet-heat/    # Leaflet.heat 0.2.0 internalizzato (heatmap)
 └─ src/                    # logica modulare (ES modules)
    ├─ main.js              # bootstrap e orchestrazione
    ├─ config.js            # endpoint USGS, regioni, fasce distanza, costanti
@@ -83,6 +87,7 @@ PezzaliSisma/
    ├─ dashboard.js         # card "Attività attuale" (eventi, mag max, sorgente, connessione, fallback)
    ├─ overview.js          # "Situazione generale" Italia/Mondo (ultime 24h, USGS)
    ├─ timeline.js          # timeline + playback temporale (24h/7g/30g/365g)
+   ├─ info.js              # box informativi (overlay accessibile, nessuna libreria)
    ├─ sismaradar/          # SismaRadar: lettura statistica (NON previsione)
    │  ├─ engine.js         #   funzioni pure (analyze/classify/explain)
    │  └─ radar.js          #   conteggio finestra precedente + render card
@@ -121,13 +126,10 @@ sottopercorso come quello di GitHub Pages.
 
 ---
 
-## Roadmap (fasi future, non incluse in questa milestone)
+## Roadmap (fasi future, non incluse nella 1.0)
 
-- Sorgenti dati aggiuntive (INGV per l'Italia, EMSC, stream real-time)
-- Geolocalizzazione utente e distanza dagli eventi
-- Grafici statistici (magnitudo nel tempo, profondità)
-- Allerte in foreground e notifiche browser dove supportate
-- Tema chiaro/scuro, internazionalizzazione (IT/EN)
+- **1.1**: grafici statistici (magnitudo nel tempo, profondità), filtri persistenti, tema chiaro/scuro, internazionalizzazione (IT/EN), miglioramenti accessibilità.
+- **2.0**: sorgenti aggiuntive (EMSC, stream near-real-time) con deduplica multi-fonte, condivisione/permalink di una vista, tile offline più estese.
 
 > Non sono previste funzioni di previsione sismica in nessuna fase.
 
@@ -143,5 +145,6 @@ sottopercorso come quello di GitHub Pages.
 
 ## Licenza e dati
 
-Dati forniti dallo **U.S. Geological Survey (USGS)**, di pubblico dominio.
+Dati forniti dallo **U.S. Geological Survey (USGS)** (di pubblico dominio) e
+dall'**Istituto Nazionale di Geofisica e Vulcanologia (INGV)**.
 Mappe © OpenStreetMap contributors. Progetto a scopo informativo e didattico.

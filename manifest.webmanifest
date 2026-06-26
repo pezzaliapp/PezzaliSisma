@@ -2,7 +2,7 @@
   "id": "/PezzaliSisma/",
   "name": "PezzaliSisma — Monitoraggio sismico",
   "short_name": "Sisma",
-  "description": "PWA gratuita per il monitoraggio sismico in tempo reale con dati pubblici USGS. Non prevede terremoti.",
+  "description": "PWA gratuita per il monitoraggio sismico in tempo reale con dati pubblici USGS e INGV. Non prevede terremoti.",
   "lang": "it",
   "dir": "ltr",
   "start_url": "./index.html",
