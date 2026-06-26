@@ -13,11 +13,13 @@ import {
 const L = window.L;
 
 let map = null;
-let markerLayer = null;   // eventi sismici
-let userLayer = null;     // posizione utente + cerchi di distanza
-let lockBtnEl = null;     // pulsante "Blocca/Sblocca mappa"
-let mapInteractive = true; // true = la mappa cattura i gesti (pan/zoom)
-let mqMobile = null;      // media query mobile
+let markerLayer = null;     // eventi sismici
+let userLayer = null;       // posizione utente + cerchi di distanza
+let highlightLayer = null;  // alone "Nuovo" sull'ultimo evento
+let lockBtnEl = null;       // pulsante "Blocca/Sblocca mappa"
+let mapInteractive = true;  // true = la mappa cattura i gesti (pan/zoom)
+let mqMobile = null;        // media query mobile
+const markerById = new Map(); // id evento -> marker (per "Apri dettaglio")
 
 function isMobile() {
   return mqMobile ? mqMobile.matches : false;
@@ -83,6 +85,7 @@ export function initMap() {
   // userLayer aggiunto per primo: i marker degli eventi restano cliccabili sopra.
   userLayer = L.layerGroup().addTo(map);
   markerLayer = L.layerGroup().addTo(map);
+  highlightLayer = L.layerGroup().addTo(map); // alone "Nuovo" sopra tutto
 
   // Toggle Blocca/Sblocca + interattività di default in base al viewport.
   mqMobile = window.matchMedia('(max-width: 900px)');
@@ -127,6 +130,8 @@ function popupHtml(e) {
 // "forte ma lontano" sono distinguibili a colpo d'occhio.
 export function drawMarkers(events, regionKey, userPos) {
   markerLayer.clearLayers();
+  highlightLayer.clearLayers();
+  markerById.clear();
   const pts = [];
 
   events.forEach(e => {
@@ -139,8 +144,29 @@ export function drawMarkers(events, regionKey, userPos) {
       fillOpacity: 0.82
     }).bindPopup(popupHtml(e));
     marker.addTo(markerLayer);
+    markerById.set(e.id, marker);
     pts.push([e.lat, e.lon]);
   });
+
+  // Evidenzia l'evento più recente (events è ordinato per tempo discendente)
+  // con un alone pulsante discreto e l'etichetta "Nuovo". Non intercetta i click.
+  if (events.length) {
+    const last = events[0];
+    const icon = L.divIcon({
+      className: 'pulseIcon',
+      html: '<span class="pulse-ring"></span><span class="new-badge">Nuovo</span>',
+      iconSize: [0, 0]
+    });
+    L.marker([last.lat, last.lon], {
+      icon,
+      interactive: false,
+      keyboard: false,
+      zIndexOffset: 1000
+    }).addTo(highlightLayer);
+  }
+
+  // Aggiorna la legenda (la parte di prossimità appare solo con posizione nota).
+  updateLegend(userPos);
 
   // Adatta la vista includendo anche la posizione utente, se presente.
   if (userPos) pts.push([userPos.lat, userPos.lon]);
@@ -151,6 +177,20 @@ export function drawMarkers(events, regionKey, userPos) {
     map.setView(region.view, region.zoom);
   }
   setTimeout(() => map.invalidateSize(), 100);
+}
+
+// Mostra/nasconde la parte "prossimità" della legenda in base alla posizione.
+function updateLegend(userPos) {
+  const prox = document.querySelector('.legendProx');
+  if (prox) prox.hidden = !userPos;
+}
+
+// Centra la mappa su un evento e ne apre il popup ("Apri dettaglio").
+export function openEventPopup(id) {
+  const marker = markerById.get(id);
+  if (!marker || !map) return;
+  map.setView(marker.getLatLng(), Math.max(map.getZoom(), 7));
+  marker.openPopup();
 }
 
 // Disegna marker blu della posizione, cerchio di accuratezza GPS e i cerchi

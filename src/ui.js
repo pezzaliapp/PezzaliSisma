@@ -5,13 +5,13 @@ import { fmtTime, timeAgo } from './geo.js';
 
 const $ = id => document.getElementById(id);
 
-// Aggiorna il messaggio di stato in basso al pannello controlli.
+// Aggiorna il messaggio di stato (dentro la sezione Controlli).
 export function setStatus(message) {
   $('status').textContent = message;
 }
 
 // Renderizza la lista degli ultimi eventi. `onSelect(event)` viene invocato
-// al click su una riga (per centrare la mappa).
+// al click (o Invio/Spazio) su una riga, per centrare la mappa.
 export function renderList(events, onSelect) {
   const box = $('eventList');
   box.innerHTML = '';
@@ -22,11 +22,9 @@ export function renderList(events, onSelect) {
   }
 
   events.slice(0, LIST_LIMIT).forEach(e => {
-    const dist =
-      e._dist != null ? ` · ${e._dist.toFixed(0)} km ${e._dir}` : '';
+    const dist = e._dist != null ? ` · ${e._dist.toFixed(0)} km ${e._dir}` : '';
     const div = document.createElement('div');
     div.className = 'event';
-    // Accessibilità: riga attivabile da tastiera come un pulsante.
     div.setAttribute('role', 'button');
     div.setAttribute('tabindex', '0');
     div.setAttribute(
@@ -48,36 +46,77 @@ export function renderList(events, onSelect) {
   });
 }
 
-// Aggiorna il riquadro statistiche.
-export function renderStats(stats) {
-  $('count').textContent = stats.count;
-  $('maxMag').textContent = stats.maxMag != null ? stats.maxMag.toFixed(1) : '–';
-  $('lastEvent').textContent = stats.lastTime
-    ? fmtTime(stats.lastTime).replace(',', '')
-    : '–';
-
-  $('signal').textContent = stats.count
-    ? `Eventi filtrati: ${stats.count}, di cui ${stats.last24h} nelle ultime 24 ore. ` +
-      `Dato statistico descrittivo, non previsionale.`
-    : 'Nessun evento da mostrare con i filtri correnti.';
+function makeButton(label, className, onClick) {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = className;
+  btn.textContent = label;
+  btn.addEventListener('click', onClick);
+  return btn;
 }
 
-// Card "Terremoto più vicino". `event` è null se la posizione non è nota.
-export function renderNearest(event) {
+// Card "Evento più vicino". Se la posizione non è nota mostra l'invito ad
+// attivare la geolocalizzazione.
+//   onCenter(event) -> centra la mappa; onLocate() -> attiva la posizione.
+export function renderNearest(event, onCenter, onLocate) {
   const body = $('nearestBody');
+  body.innerHTML = '';
+
   if (!event || event._dist == null) {
-    body.innerHTML =
-      '<p class="nearestHint">Attiva la posizione per vedere l\'evento più vicino a te.</p>';
+    const p = document.createElement('p');
+    p.className = 'nearestHint';
+    p.textContent = 'Attiva la posizione per vedere l\'evento più vicino a te.';
+    body.appendChild(p);
+    body.appendChild(
+      makeButton('Attiva geolocalizzazione', 'fullBtn', () => onLocate())
+    );
     return;
   }
-  body.innerHTML =
-    `<div class="nearGrid">` +
-    `<div><span>Distanza</span><b>${event._dist.toFixed(1)} km ${event._dir}</b></div>` +
+
+  const grid = document.createElement('div');
+  grid.className = 'nearGrid';
+  grid.innerHTML =
     `<div><span>Magnitudo</span><b>M ${event.mag.toFixed(1)}</b></div>` +
-    `<div><span>Ora</span><b>${fmtTime(event.time)}</b></div>` +
-    `<div><span>Tempo trascorso</span><b>${timeAgo(event.time)}</b></div>` +
-    `</div>` +
-    `<p class="nearPlace">${event.place}</p>`;
+    `<div><span>Distanza</span><b>${event._dist.toFixed(1)} km</b></div>` +
+    `<div><span>Direzione</span><b>${event._dir}</b></div>` +
+    `<div><span>Tempo trascorso</span><b>${timeAgo(event.time)}</b></div>`;
+  body.appendChild(grid);
+
+  const place = document.createElement('p');
+  place.className = 'nearPlace';
+  place.textContent = `${event.place} · ${fmtTime(event.time)}`;
+  body.appendChild(place);
+
+  body.appendChild(makeButton('Centra sulla mappa', 'fullBtn', () => onCenter(event)));
+}
+
+// Card "Evento più importante" (magnitudo massima fra gli eventi visualizzati).
+//   onOpen(event) -> centra la mappa e apre il dettaglio.
+export function renderImportant(event, onOpen) {
+  const body = $('importantBody');
+  body.innerHTML = '';
+
+  if (!event) {
+    const p = document.createElement('p');
+    p.className = 'nearestHint';
+    p.textContent = 'Nessun evento con i filtri correnti.';
+    body.appendChild(p);
+    return;
+  }
+
+  const grid = document.createElement('div');
+  grid.className = 'nearGrid';
+  grid.innerHTML =
+    `<div><span>Magnitudo</span><b>M ${event.mag.toFixed(1)}</b></div>` +
+    `<div><span>Fonte</span><b>${event.source}</b></div>`;
+  body.appendChild(grid);
+
+  const place = document.createElement('p');
+  place.className = 'nearPlace';
+  place.textContent = `${event.place} · ${fmtTime(event.time)}`;
+  body.appendChild(place);
+
+  body.appendChild(makeButton('Apri dettaglio', 'fullBtn', () => onOpen(event)));
 }
 
 // Banner "La tua posizione". `pos` è null se la posizione non è nota.
@@ -92,8 +131,6 @@ export function renderBanner(pos) {
   $('posAccuracy').textContent =
     pos.accuracy != null ? `±${Math.round(pos.accuracy)} m` : '—';
   $('posUpdated').textContent = fmtTime(pos.timestamp);
-  // Comune/Provincia richiederebbero un reverse-geocoding su server esterno:
-  // per la promessa di privacy restano non rilevati in questa modalità.
   $('posComune').textContent = pos.comune || '—';
   $('posProvincia').textContent = pos.provincia || '—';
 }

@@ -4,28 +4,30 @@ import { fmtTime } from './geo.js';
 
 const $ = id => document.getElementById(id);
 
-// Aggiorna il pannello "Stato": connessione online/offline, sorgente dati
-// attiva, numero eventi scaricati, ultimo aggiornamento ed eventuale fallback.
-// `snapshot`:
-//   { online, activeSource, fellBack, triedFirst, downloaded, lastUpdate }
-export function renderDashboard(snapshot) {
+// Aggiorna la card "Attività attuale": eventi visualizzati, magnitudo massima,
+// ultimo evento, sorgente attiva, ultimo aggiornamento, stato connessione ed
+// eventuale fallback automatico.
+//   snapshot: { online, activeSource, fellBack, triedFirst, shown, maxMag, lastTime, lastUpdate }
+export function renderActivity(s) {
   const online = $('dashOnline');
-  online.textContent = snapshot.online ? 'Online' : 'Offline';
-  online.className = 'badge ' + (snapshot.online ? 'on' : 'off');
+  online.textContent = s.online ? 'Online' : 'Offline';
+  online.className = 'badge ' + (s.online ? 'on' : 'off');
 
-  $('dashSource').textContent = snapshot.activeSource || '—';
-  $('dashCount').textContent = snapshot.activeSource ? String(snapshot.downloaded) : '—';
-  $('dashUpdated').textContent = snapshot.lastUpdate ? fmtTime(snapshot.lastUpdate) : '—';
+  $('dashCount').textContent = String(s.shown);
+  $('dashMaxMag').textContent = s.maxMag != null ? s.maxMag.toFixed(1) : '–';
+  $('dashLast').textContent = s.lastTime ? fmtTime(s.lastTime).replace(',', '') : '–';
+  $('dashSource').textContent = s.activeSource || '–';
+  $('dashUpdated').textContent = s.lastUpdate ? fmtTime(s.lastUpdate) : '–';
 
   const fb = $('dashFallback');
-  if (!snapshot.activeSource) {
+  if (!s.activeSource) {
     fb.hidden = false;
     fb.className = 'dashFallback err';
     fb.textContent = 'Nessuna fonte dati disponibile al momento.';
-  } else if (snapshot.fellBack) {
+  } else if (s.fellBack) {
     fb.hidden = false;
     fb.className = 'dashFallback';
-    fb.textContent = `Fallback automatico: ${snapshot.triedFirst} non disponibile → uso ${snapshot.activeSource}.`;
+    fb.textContent = `Fallback automatico: ${s.triedFirst} non disponibile → uso ${s.activeSource}.`;
   } else {
     fb.hidden = true;
     fb.className = 'dashFallback';

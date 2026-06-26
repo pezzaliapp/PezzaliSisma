@@ -2,6 +2,13 @@
 
 Tutte le modifiche rilevanti del progetto PezzaliSisma.
 
+## Milestone B — Dashboard professionale 1.0 (UX)
+- **Home dashboard** con gerarchia di informazioni in primo piano: **Attività attuale** (eventi visualizzati, magnitudo max, ultimo evento, sorgente, ultimo aggiornamento, connessione), **Evento più vicino** (con «Centra sulla mappa» / «Attiva geolocalizzazione»), **Evento più importante** (con «Apri dettaglio»), **Situazione generale** Italia/Mondo (eventi ultime 24 h, da una sola richiesta USGS), card **SismaRadar** segnaposto («In preparazione», slot Indice/Trend/Sciami/Cluster — motore non implementato).
+- **Mappa**: alone pulsante + etichetta «Nuovo» sull'ultimo evento (animazione discreta, rispetta `prefers-reduced-motion`); legenda di prossimità mostrata solo con posizione attiva. Comportamento mappa stabile invariato.
+- **Controlli** ridotti a sezioni **comprimibili** (aperte su desktop, chiuse su smartphone), funzionalità identiche.
+- **Responsive** mobile: Dashboard → Mappa → Controlli → Lista; desktop: dashboard laterale + mappa.
+- Nessuna nuova dipendenza, nessuna funzione sperimentale (timeline/heatmap/grafici/ricerca/preferiti/alert/export/SismaRadar non inclusi).
+
 ## Fase A — Audit UI e dashboard 1.0
 - **Pannello "Stato" (dashboard)**: connessione online/offline (badge), sorgente dati attiva, numero eventi scaricati, ultimo aggiornamento, indicazione di fallback automatico. Stato sorgente consolidato qui (rimosso il riquadro duplicato nei Controlli).
 - **Accessibilità**: focus visibile da tastiera (`:focus-visible`), righe della lista eventi attivabili da tastiera (`role=button`, `tabindex`, Invio/Spazio), `aria-live` su stato e dashboard, `aria-label` sulla mappa, `color-scheme`.

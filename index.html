@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>PezzaliSisma — Monitoraggio sismico</title>
-  <meta name="description" content="PWA gratuita per il monitoraggio sismico in tempo reale. Dati pubblici USGS. Non prevede terremoti." />
+  <meta name="description" content="PWA gratuita per il monitoraggio sismico in tempo reale. Dati pubblici USGS e INGV. Non prevede terremoti." />
   <meta name="theme-color" content="#07111f" />
   <meta name="color-scheme" content="dark light" />
   <link rel="manifest" href="manifest.webmanifest" />
@@ -38,101 +38,145 @@
 
   <main class="app">
     <aside class="panel">
-      <section class="card dashboard" aria-label="Stato del sistema" aria-live="polite">
-        <h2>Stato</h2>
-        <div class="dashGrid">
-          <div class="dashItem"><span>Connessione</span><b id="dashOnline" class="badge">—</b></div>
-          <div class="dashItem"><span>Sorgente dati</span><b id="dashSource">—</b></div>
-          <div class="dashItem"><span>Eventi scaricati</span><b id="dashCount">—</b></div>
-          <div class="dashItem"><span>Ultimo aggiornamento</span><b id="dashUpdated">—</b></div>
-        </div>
-        <div id="dashFallback" class="dashFallback" hidden></div>
-      </section>
 
-      <section class="card">
-        <h2>Controlli</h2>
-        <label>Periodo
-          <select id="periodSelect">
-            <option value="day">Ultime 24 ore</option>
-            <option value="week" selected>Ultimi 7 giorni</option>
-            <option value="month">Ultimi 30 giorni</option>
-          </select>
-        </label>
-        <label>Vista
-          <select id="areaSelect">
-            <option value="world">Mondo</option>
-            <option value="italy" selected>Italia</option>
-            <option value="mediterranean">Mediterraneo</option>
-          </select>
-        </label>
-        <label>Magnitudo minima <span id="magValue">0</span>
-          <input id="magRange" type="range" min="0" max="6" step="0.5" value="0" />
-        </label>
-        <label>Distanza da me
-          <select id="distanceSelect">
-            <option value="0" selected>Tutte le distanze</option>
-            <option value="25">Solo entro 25 km</option>
-            <option value="50">Solo entro 50 km</option>
-            <option value="100">Solo entro 100 km</option>
-            <option value="200">Solo entro 200 km</option>
-          </select>
-        </label>
-        <label>Sorgente dati
-          <select id="sourceSelect">
-            <option value="auto" selected>Auto (consigliata)</option>
-            <option value="USGS">USGS — globale</option>
-            <option value="INGV">INGV — Italia/Mediterraneo</option>
-          </select>
-        </label>
-        <div id="status" class="status" role="status" aria-live="polite">Pronto.</div>
-      </section>
+      <!-- GRUPPO DASHBOARD (informazioni in primo piano) -->
+      <div class="grp grpDash">
 
-      <section class="card">
-        <h2>Posizione</h2>
-        <div class="geoActions">
-          <button id="locateBtn" type="button">Usa la mia posizione</button>
-          <button id="centerBtn" type="button" class="ghost">Centra su di me</button>
-        </div>
-        <label class="followRow">
-          <input id="followChk" type="checkbox" />
-          <span>Segui la mia posizione</span>
-        </label>
-        <div class="geoActions geoActions2">
-          <button id="geocodeBtn" type="button" class="ghost">Rileva Comune e Provincia</button>
-          <button id="clearPosBtn" type="button" class="ghost danger">Cancella posizione</button>
-        </div>
-        <div class="privacy">
-          <p>La posizione viene utilizzata esclusivamente sul dispositivo e non viene trasmessa ad alcun server di PezzaliSisma.</p>
-          <details>
-            <summary>Informativa privacy</summary>
-            <p>Le coordinate GPS restano sul tuo dispositivo (salvate solo in <code>localStorage</code>). Comune e Provincia non vengono rilevati automaticamente.</p>
-            <p>Solo se premi «Rileva Comune e Provincia» viene inviata una singola richiesta al servizio pubblico OpenStreetMap Nominatim con le coordinate GPS, per ottenere il nome del comune. Nessun dato viene inviato ai server di PezzaliSisma. Il risultato è salvato solo sul dispositivo e non viene richiesto di nuovo finché non ti sposti di oltre 500 metri o non richiedi un aggiornamento.</p>
-            <p>«Cancella posizione» elimina tutte le informazioni di posizione memorizzate localmente.</p>
-          </details>
-        </div>
-      </section>
+        <!-- 1. ATTIVITÀ ATTUALE -->
+        <section class="card activity" aria-label="Attività attuale" aria-live="polite">
+          <h2>Attività attuale</h2>
+          <div class="actGrid">
+            <div class="actItem"><span>Eventi</span><b id="dashCount">0</b></div>
+            <div class="actItem"><span>Mag. max</span><b id="dashMaxMag">–</b></div>
+            <div class="actItem"><span>Ultimo</span><b id="dashLast">–</b></div>
+            <div class="actItem"><span>Sorgente</span><b id="dashSource">–</b></div>
+            <div class="actItem"><span>Aggiornato</span><b id="dashUpdated">–</b></div>
+            <div class="actItem"><span>Connessione</span><b id="dashOnline" class="badge">–</b></div>
+          </div>
+          <div id="dashFallback" class="dashFallback" hidden></div>
+        </section>
 
-      <section class="card stats">
-        <h2>Quadro rapido</h2>
-        <div class="grid2">
-          <div><strong id="count">0</strong><span>eventi</span></div>
-          <div><strong id="maxMag">–</strong><span>max M</span></div>
-          <div><strong id="lastEvent">–</strong><span>ultimo</span></div>
-        </div>
-        <p id="signal" class="signal">Caricamento dati…</p>
-      </section>
+        <!-- 2. EVENTO PIÙ VICINO -->
+        <section class="card nearestCard" id="nearestCard" aria-label="Evento più vicino">
+          <h2>Evento più vicino</h2>
+          <div id="nearestBody" class="nearestBody"></div>
+        </section>
 
-      <section class="card nearestCard" id="nearestCard">
-        <h2>Terremoto più vicino</h2>
-        <div id="nearestBody" class="nearestBody">
-          <p class="nearestHint">Attiva la posizione per vedere l'evento più vicino a te.</p>
-        </div>
-      </section>
+        <!-- 3. EVENTO PIÙ IMPORTANTE -->
+        <section class="card importantCard" id="importantCard" aria-label="Evento più importante">
+          <h2>Evento più importante</h2>
+          <div id="importantBody" class="importantBody"></div>
+        </section>
 
-      <section class="card listCard">
+        <!-- 4. SITUAZIONE GENERALE -->
+        <div class="overviewRow">
+          <section class="card mini" aria-label="Situazione Italia">
+            <h3>Italia <small>oggi</small></h3>
+            <div class="miniGrid">
+              <div><span>Eventi</span><b id="ovItCount">–</b></div>
+              <div><span>Mag. max</span><b id="ovItMag">–</b></div>
+            </div>
+          </section>
+          <section class="card mini" aria-label="Situazione Mondo">
+            <h3>Mondo <small>oggi</small></h3>
+            <div class="miniGrid">
+              <div><span>Eventi</span><b id="ovWoCount">–</b></div>
+              <div><span>Mag. max</span><b id="ovWoMag">–</b></div>
+            </div>
+          </section>
+        </div>
+
+        <!-- 5. SISMARADAR (solo card segnaposto, motore non ancora implementato) -->
+        <section class="card sismaradar" aria-label="SismaRadar (in preparazione)">
+          <h2>SismaRadar</h2>
+          <p class="srStatus">In preparazione</p>
+          <div class="srSlots">
+            <div><span>Indice</span><b>—</b></div>
+            <div><span>Trend</span><b>—</b></div>
+            <div><span>Sciami</span><b>—</b></div>
+            <div><span>Cluster</span><b>—</b></div>
+          </div>
+          <p class="srNote">Modulo di analisi statistica in arrivo. Non costituirà una previsione sismica.</p>
+        </section>
+
+      </div>
+
+      <!-- GRUPPO CONTROLLI (in secondo piano, comprimibile) -->
+      <div class="grp grpControls">
+        <details class="collapsible card">
+          <summary class="cardHead">Controlli</summary>
+          <div class="cardBody">
+            <label>Periodo
+              <select id="periodSelect">
+                <option value="day">Ultime 24 ore</option>
+                <option value="week" selected>Ultimi 7 giorni</option>
+                <option value="month">Ultimi 30 giorni</option>
+              </select>
+            </label>
+            <label>Vista
+              <select id="areaSelect">
+                <option value="world">Mondo</option>
+                <option value="italy" selected>Italia</option>
+                <option value="mediterranean">Mediterraneo</option>
+              </select>
+            </label>
+            <label>Magnitudo minima <span id="magValue">0</span>
+              <input id="magRange" type="range" min="0" max="6" step="0.5" value="0" />
+            </label>
+            <label>Distanza da me
+              <select id="distanceSelect">
+                <option value="0" selected>Tutte le distanze</option>
+                <option value="25">Solo entro 25 km</option>
+                <option value="50">Solo entro 50 km</option>
+                <option value="100">Solo entro 100 km</option>
+                <option value="200">Solo entro 200 km</option>
+              </select>
+            </label>
+            <label>Sorgente dati
+              <select id="sourceSelect">
+                <option value="auto" selected>Auto (consigliata)</option>
+                <option value="USGS">USGS — globale</option>
+                <option value="INGV">INGV — Italia/Mediterraneo</option>
+              </select>
+            </label>
+            <div id="status" class="status" role="status" aria-live="polite">Pronto.</div>
+          </div>
+        </details>
+
+        <details class="collapsible card">
+          <summary class="cardHead">Posizione</summary>
+          <div class="cardBody">
+            <div class="geoActions">
+              <button id="locateBtn" type="button">Usa la mia posizione</button>
+              <button id="centerBtn" type="button" class="ghost">Centra su di me</button>
+            </div>
+            <label class="followRow">
+              <input id="followChk" type="checkbox" />
+              <span>Segui la mia posizione</span>
+            </label>
+            <div class="geoActions geoActions2">
+              <button id="geocodeBtn" type="button" class="ghost">Rileva Comune e Provincia</button>
+              <button id="clearPosBtn" type="button" class="ghost danger">Cancella posizione</button>
+            </div>
+            <div class="privacy">
+              <p>La posizione viene utilizzata esclusivamente sul dispositivo e non viene trasmessa ad alcun server di PezzaliSisma.</p>
+              <details>
+                <summary>Informativa privacy</summary>
+                <p>Le coordinate GPS restano sul tuo dispositivo (salvate solo in <code>localStorage</code>). Comune e Provincia non vengono rilevati automaticamente.</p>
+                <p>Solo se premi «Rileva Comune e Provincia» viene inviata una singola richiesta al servizio pubblico OpenStreetMap Nominatim con le coordinate GPS, per ottenere il nome del comune. Nessun dato viene inviato ai server di PezzaliSisma. Il risultato è salvato solo sul dispositivo e non viene richiesto di nuovo finché non ti sposti di oltre 500 metri o non richiedi un aggiornamento.</p>
+                <p>«Cancella posizione» elimina tutte le informazioni di posizione memorizzate localmente.</p>
+              </details>
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <!-- LISTA EVENTI -->
+      <section class="card listCard grpList">
         <h2>Ultimi eventi</h2>
         <div id="eventList" class="eventList"></div>
       </section>
+
     </aside>
 
     <section class="mapWrap">
@@ -142,17 +186,19 @@
         <span><i class="m2"></i> M 2–3</span>
         <span><i class="m3"></i> M 3–4</span>
         <span><i class="m4"></i> M ≥ 4</span>
-        <span class="legendSep">·</span>
-        <span><i class="p25"></i> ≤25</span>
-        <span><i class="p50"></i> ≤50</span>
-        <span><i class="p100"></i> ≤100</span>
-        <span><i class="p200"></i> ≤200 km</span>
+        <span class="legendProx" hidden>
+          <span class="legendSep">·</span>
+          <span><i class="p25"></i> ≤25</span>
+          <span><i class="p50"></i> ≤50</span>
+          <span><i class="p100"></i> ≤100</span>
+          <span><i class="p200"></i> ≤200 km</span>
+        </span>
       </div>
     </section>
   </main>
 
   <footer>
-    Fonte dati: USGS GeoJSON pubblico. Per uso informativo e didattico. Nessuna previsione sismica.
+    Fonti dati: USGS e INGV (GeoJSON/FDSN pubblici). Per uso informativo e didattico. Nessuna previsione sismica.
     La posizione resta sul dispositivo.
   </footer>
 

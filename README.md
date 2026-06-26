@@ -76,8 +76,9 @@ PezzaliSisma/
    ├─ geo.js               # utilità geografiche (distanza, bearing, prossimità, tempo)
    ├─ geolocation.js       # Geolocation API + persistenza localStorage (device-only)
    ├─ geocode.js           # reverse geocoding opt-in (OSM Nominatim)
-   ├─ dashboard.js         # pannello "Stato" (online/offline, sorgente, conteggi, fallback)
-   ├─ map.js               # mappa, marker eventi, marker utente, cerchi, popup
+   ├─ dashboard.js         # card "Attività attuale" (eventi, mag max, sorgente, connessione, fallback)
+   ├─ overview.js          # "Situazione generale" Italia/Mondo (ultime 24h, USGS)
+   ├─ map.js               # mappa, marker eventi, marker utente, cerchi, popup, alone "Nuovo"
    └─ ui.js                # rendering lista, statistiche, banner, card più vicino
 ```
 

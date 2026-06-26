@@ -74,3 +74,53 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible,su
 .badge.off{background:#2a1414;color:#ffb3b3;border:1px solid #6e2727}
 .dashFallback{margin-top:10px;font-size:13px;padding:7px 10px;border-radius:9px;background:#2a230d;border:1px solid #6e5a27;color:#ffe7ad;line-height:1.4}
 .dashFallback.err{background:#2a1414;border-color:#6e2727;color:#ffb3b3}
+
+/* --- Dashboard professionale (Milestone B) --- */
+.grp{display:block}
+/* Attività attuale (compatta) */
+.activity .actGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.actItem{background:#0d1324;border:1px solid var(--line);border-radius:10px;padding:8px}
+.actItem span{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin-bottom:2px}
+.actItem b{font-size:15px;word-break:break-word}
+/* Situazione generale Italia/Mondo */
+.overviewRow{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.card.mini{margin-bottom:0}
+.card.mini h3{margin:0 0 8px;font-size:15px}
+.card.mini h3 small{color:var(--muted);font-weight:400;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.miniGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.miniGrid div{background:#0d1324;border:1px solid var(--line);border-radius:10px;padding:8px}
+.miniGrid span{display:block;font-size:10px;color:var(--muted);text-transform:uppercase}
+.miniGrid b{font-size:18px}
+/* SismaRadar segnaposto */
+.sismaradar .srStatus{display:inline-block;margin:0 0 10px;padding:3px 10px;border-radius:999px;background:#23304a;color:#cfe0ff;font-size:13px;font-weight:700}
+.srSlots{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.srSlots div{background:#0d1324;border:1px dashed var(--line);border-radius:10px;padding:8px}
+.srSlots span{display:block;font-size:10px;color:var(--muted);text-transform:uppercase}
+.srSlots b{font-size:16px;color:var(--muted)}
+.srNote{margin:10px 0 0;font-size:12px;color:var(--muted)}
+/* Pulsanti a tutta larghezza nelle card */
+.fullBtn{width:100%;margin-top:10px}
+.importantBody .nearGrid,.nearestBody .nearGrid{grid-template-columns:1fr 1fr}
+/* Sezioni comprimibili (controlli in secondo piano) */
+details.collapsible{padding:0}
+details.collapsible>summary.cardHead{cursor:pointer;list-style:none;font-size:19px;font-weight:700;padding:16px}
+details.collapsible>summary.cardHead::-webkit-details-marker{display:none}
+details.collapsible>summary.cardHead::after{content:'▸';float:right;color:var(--muted)}
+details.collapsible[open]>summary.cardHead::after{content:'▾'}
+details.collapsible .cardBody{padding:0 16px 16px}
+/* Alone "Nuovo" sull'ultimo evento (discreto) */
+.pulseIcon{pointer-events:none}
+.pulse-ring{position:absolute;left:-11px;top:-11px;width:22px;height:22px;border-radius:50%;border:2px solid #fff;animation:sismaPulse 2.2s ease-out infinite}
+.new-badge{position:absolute;left:13px;top:-20px;background:#ff3b30;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap}
+@keyframes sismaPulse{0%{transform:scale(.6);opacity:.9}100%{transform:scale(2.1);opacity:0}}
+@media(prefers-reduced-motion:reduce){.pulse-ring{animation:none}}
+/* Responsive: Dashboard -> Mappa -> Controlli -> Lista */
+@media(max-width:900px){
+  .panel{display:contents}
+  .grpDash{order:1}
+  .mapWrap{order:2}
+  .grpControls{order:3}
+  .grpList{order:4}
+  .grpDash,.grpControls,.grpList{padding:0 12px}
+  .activity .actGrid{grid-template-columns:repeat(2,1fr)}
+}

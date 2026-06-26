@@ -18,16 +18,18 @@ import {
   clearUserLayer,
   focusEvent,
   centerOnUser,
-  panToUser
+  panToUser,
+  openEventPopup
 } from './map.js';
 import {
   setStatus,
   renderList,
-  renderStats,
   renderNearest,
+  renderImportant,
   renderBanner
 } from './ui.js';
-import { renderDashboard } from './dashboard.js';
+import { renderActivity } from './dashboard.js';
+import { refreshOverview } from './overview.js';
 import {
   loadStoredPosition,
   storePosition,
@@ -47,7 +49,29 @@ import {
 
 const $ = id => document.getElementById(id);
 
-// Ricalcola filtri e aggiorna mappa, lista, statistiche, banner e card vicino.
+// Evento "più importante" = magnitudo massima fra quelli visualizzati.
+function mostImportant(events) {
+  let best = null;
+  for (const e of events) if (!best || e.mag > best.mag) best = e;
+  return best;
+}
+
+// Aggiorna la card "Attività attuale" dallo stato corrente + connessione.
+function renderActivityNow() {
+  const stats = computeStats(state.filtered);
+  renderActivity({
+    online: navigator.onLine,
+    activeSource: state.activeSource,
+    fellBack: state.fellBack,
+    triedFirst: state.triedFirst,
+    shown: state.filtered.length,
+    maxMag: stats.maxMag,
+    lastTime: stats.lastTime,
+    lastUpdate: state.lastUpdate
+  });
+}
+
+// Ricalcola filtri e aggiorna mappa, lista, dashboard, banner e card.
 function refreshView() {
   decorate(state.raw, state.userPos);
   state.base = regionMagFilter(state.raw, state.filters);
@@ -59,8 +83,9 @@ function refreshView() {
   else clearUserLayer();
 
   renderList(state.filtered, e => focusEvent(e.lat, e.lon));
-  renderStats(computeStats(state.filtered));
-  renderNearest(state.nearest);
+  renderActivityNow();
+  renderNearest(state.nearest, e => focusEvent(e.lat, e.lon), onLocateClick);
+  renderImportant(mostImportant(state.filtered), e => openEventPopup(e.id));
   renderBanner(state.userPos);
 }
 
@@ -69,18 +94,6 @@ function errorMessage(err) {
   if (!err) return 'errore sconosciuto';
   if (err.message === 'timeout') return 'tempo scaduto (timeout)';
   return err.message;
-}
-
-// Aggiorna il pannello "Stato" usando lo stato corrente + connessione.
-function updateDashboard() {
-  renderDashboard({
-    online: navigator.onLine,
-    activeSource: state.activeSource,
-    fellBack: state.fellBack,
-    triedFirst: state.triedFirst,
-    downloaded: state.raw.length,
-    lastUpdate: state.lastUpdate
-  });
 }
 
 // Scarica i dati applicando strategia sorgente e fallback automatico.
@@ -104,8 +117,8 @@ async function loadData() {
   } else {
     setStatus('Nessuna fonte disponibile: ' + errorMessage(res.error) + '. Riprova.');
   }
-  updateDashboard();
   refreshView();
+  refreshOverview(); // "Situazione generale" Italia/Mondo (USGS 24h), in parallelo
 }
 
 // Applica una nuova posizione utente (da richiesta singola o da watch).
@@ -269,14 +282,23 @@ function registerServiceWorker() {
   }
 }
 
+// Sezioni comprimibili (Controlli/Posizione): aperte su desktop, chiuse su mobile.
+function initCollapsibles() {
+  const mobile = window.matchMedia('(max-width: 900px)').matches;
+  document.querySelectorAll('details.collapsible').forEach(d => {
+    d.open = !mobile;
+  });
+}
+
 window.addEventListener('load', () => {
   initMap();
   wireControls();
+  initCollapsibles();
 
-  // Badge connessione: aggiorna lo stato al variare di online/offline.
-  window.addEventListener('online', updateDashboard);
-  window.addEventListener('offline', updateDashboard);
-  updateDashboard();
+  // Badge connessione: aggiorna l'attività al variare di online/offline.
+  window.addEventListener('online', renderActivityNow);
+  window.addEventListener('offline', renderActivityNow);
+  renderActivityNow();
 
   // Ripristina l'ultima posizione nota (salvata solo su questo dispositivo).
   const stored = loadStoredPosition();
