@@ -31,9 +31,18 @@ export const REGIONS = {
 
 // Sorgente dati INGV (FDSN event): forte copertura su Italia e Mediterraneo.
 export const INGV_EVENT = 'https://webservices.ingv.it/fdsnws/event/1/query';
-// Giorni corrispondenti a ciascun periodo (per costruire le query INGV).
-export const PERIOD_DAYS = { day: 1, week: 7, month: 30 };
-// Limite massimo di eventi richiesti a INGV (FDSN richiede un limit esplicito).
+// Endpoint FDSN USGS (usato per la finestra a 365 giorni; i feed sommario
+// USGS arrivano solo a 30 giorni).
+export const USGS_FDSN = 'https://earthquake.usgs.gov/fdsnws/event/1/query';
+// Giorni corrispondenti a ciascun periodo.
+export const PERIOD_DAYS = { day: 1, week: 7, month: 30, year: 365 };
+// Soglia di magnitudo minima AUTOMATICA per la finestra a 365 giorni, per
+// evitare payload enormi. Dichiarata in UI e nel README.
+export const YEAR_MIN_MAG = { world: 4.0, italy: 2.5, mediterranean: 2.5 };
+// Tetto di marker disegnati sulla mappa (solo rendering): i conteggi statistici
+// restano sull'insieme completo. Mostrati i più recenti, con nota visibile.
+export const MAX_MARKERS = 3000;
+// Limite massimo di eventi richiesti via FDSN (richiede un limit esplicito).
 export const INGV_LIMIT = 3000;
 // Timeout (ms) per ogni richiesta di rete alle sorgenti dati.
 export const REQUEST_TIMEOUT_MS = 12000;

@@ -6,7 +6,7 @@
 //  - dati USGS: network-first con fallback alla cache (ultimo dato noto offline)
 //  - tiles mappa / Leaflet CDN: cache-first (le tiles sono immutabili)
 
-const VERSION = 'v9';
+const VERSION = 'v10';
 const SHELL_CACHE = 'sisma-shell-' + VERSION;
 const DATA_CACHE = 'sisma-data-' + VERSION;
 const TILE_CACHE = 'sisma-tiles-' + VERSION;
@@ -32,6 +32,7 @@ const SHELL_ASSETS = [
   './src/geocode.js',
   './src/dashboard.js',
   './src/overview.js',
+  './src/timeline.js',
   './src/map.js',
   './src/ui.js'
 ];

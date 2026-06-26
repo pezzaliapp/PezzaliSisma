@@ -2,6 +2,12 @@
 
 Tutte le modifiche rilevanti del progetto PezzaliSisma.
 
+## Milestone C1 — Timeline e playback
+- **Periodo 365 giorni**: nuova opzione "Ultimi 365 giorni". A 30 giorni si usano i feed sommario USGS; a 365 giorni si passa all'endpoint **FDSN** (USGS) e a INGV FDSN con **soglia di magnitudo automatica dichiarata**: **Mondo ≥ 4.0**, **Italia/Mediterraneo ≥ 2.5** (per limitare i dati). Nota visibile in UI quando attivo.
+- **Timeline interattiva** con **playback** leggero a passi discreti (slider tempo + play/pausa): il cursore mostra gli eventi fino all'istante scelto; "Tutti" mostra l'intero intervallo. Durante scrub/playback la vista non si riadatta (niente salti).
+- **Tetto di rendering** (3000 marker più recenti) con nota visibile "Mostrati i N di M": evita rallentamenti su dataset ampi (es. Mondo 365 g). I conteggi statistici restano sull'insieme completo. Nessun dato inventato.
+- Comportamento stabile invariato (mappa mobile, lock, sorgenti/fallback, dashboard, geolocalizzazione).
+
 ## Milestone B — Dashboard professionale 1.0 (UX)
 - **Home dashboard** con gerarchia di informazioni in primo piano: **Attività attuale** (eventi visualizzati, magnitudo max, ultimo evento, sorgente, ultimo aggiornamento, connessione), **Evento più vicino** (con «Centra sulla mappa» / «Attiva geolocalizzazione»), **Evento più importante** (con «Apri dettaglio»), **Situazione generale** Italia/Mondo (eventi ultime 24 h, da una sola richiesta USGS), card **SismaRadar** segnaposto («In preparazione», slot Indice/Trend/Sciami/Cluster — motore non implementato).
 - **Mappa**: alone pulsante + etichetta «Nuovo» sull'ultimo evento (animazione discreta, rispetta `prefers-reduced-motion`); legenda di prossimità mostrata solo con posizione attiva. Comportamento mappa stabile invariato.

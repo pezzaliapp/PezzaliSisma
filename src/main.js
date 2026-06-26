@@ -30,6 +30,7 @@ import {
 } from './ui.js';
 import { renderActivity } from './dashboard.js';
 import { refreshOverview } from './overview.js';
+import { initTimeline, setTimelineRange } from './timeline.js';
 import {
   loadStoredPosition,
   storePosition,
@@ -71,14 +72,45 @@ function renderActivityNow() {
   });
 }
 
-// Ricalcola filtri e aggiorna mappa, lista, dashboard, banner e card.
-function refreshView() {
-  decorate(state.raw, state.userPos);
-  state.base = regionMagFilter(state.raw, state.filters);
-  state.nearest = findNearest(state.base, state.userPos);
-  state.filtered = distanceFilter(state.base, state.filters.maxDistance, state.userPos);
+function timeRange(events) {
+  if (!events.length) return [0, 0];
+  let lo = events[0].time;
+  let hi = events[0].time;
+  for (const e of events) {
+    if (e.time < lo) lo = e.time;
+    if (e.time > hi) hi = e.time;
+  }
+  return [lo, hi];
+}
 
-  drawMarkers(state.filtered, state.filters.region, state.userPos);
+// Aggiorna la nota sulla mappa: soglia 365g e/o tetto di rendering.
+function updateMapNote(info) {
+  const el = $('mapNote');
+  const parts = [];
+  if (state.filters.period === 'year') {
+    parts.push('365 giorni: M minima automatica (Mondo ≥4.0, Italia/Med ≥2.5).');
+  }
+  if (info && info.drawn < info.total) {
+    parts.push(`Mostrati i ${info.drawn} eventi più recenti di ${info.total}.`);
+  }
+  if (parts.length) {
+    el.textContent = parts.join(' ');
+    el.hidden = false;
+  } else {
+    el.hidden = true;
+    el.textContent = '';
+  }
+}
+
+// Applica il cursore timeline agli insiemi pre-cursore e aggiorna la UI.
+// `fit` = adatta la vista mappa (false durante scrub/playback).
+function applyCursorAndRender(fit) {
+  const cur = state.timelineCursor;
+  state.base = cur ? state.baseAll.filter(e => e.time <= cur) : state.baseAll;
+  state.filtered = cur ? state.filtAll.filter(e => e.time <= cur) : state.filtAll;
+  state.nearest = findNearest(state.base, state.userPos);
+
+  const info = drawMarkers(state.filtered, state.filters.region, state.userPos, { fit });
   if (state.userPos) drawUserLayer(state.userPos);
   else clearUserLayer();
 
@@ -87,6 +119,28 @@ function refreshView() {
   renderNearest(state.nearest, e => focusEvent(e.lat, e.lon), onLocateClick);
   renderImportant(mostImportant(state.filtered), e => openEventPopup(e.id));
   renderBanner(state.userPos);
+  updateMapNote(info);
+}
+
+// Ricalcola gli insiemi pre-cursore (region+mag+distanza) e ridisegna.
+// `resetTimeline` ripristina il cursore e l'intervallo della timeline.
+function refreshView(resetTimeline = false) {
+  decorate(state.raw, state.userPos);
+  state.baseAll = regionMagFilter(state.raw, state.filters);
+  state.filtAll = distanceFilter(state.baseAll, state.filters.maxDistance, state.userPos);
+
+  if (resetTimeline) {
+    state.timelineCursor = null;
+    const [lo, hi] = timeRange(state.filtAll);
+    setTimelineRange(lo, hi);
+  }
+  applyCursorAndRender(true);
+}
+
+// Callback della timeline: imposta il cursore e ridisegna senza riadattare la vista.
+function onTimelineChange(cursorMs) {
+  state.timelineCursor = cursorMs;
+  applyCursorAndRender(false);
 }
 
 // Traduce un errore tecnico in un messaggio chiaro per l'utente.
@@ -117,7 +171,7 @@ async function loadData() {
   } else {
     setStatus('Nessuna fonte disponibile: ' + errorMessage(res.error) + '. Riprova.');
   }
-  refreshView();
+  refreshView(true); // nuovo dataset: ripristina cursore e intervallo timeline
   refreshOverview(); // "Situazione generale" Italia/Mondo (USGS 24h), in parallelo
 }
 
@@ -239,7 +293,7 @@ function onDistanceChange(e) {
   if (state.filters.maxDistance && !state.userPos) {
     setStatus('Attiva prima la posizione per filtrare per distanza.');
   }
-  refreshView();
+  refreshView(true);
 }
 
 // Collega gli elementi dell'interfaccia ai gestori.
@@ -248,6 +302,7 @@ function wireControls() {
 
   $('periodSelect').addEventListener('change', e => {
     state.filters.period = e.target.value;
+    $('floorNote').hidden = e.target.value !== 'year';
     loadData(); // il periodo cambia la sorgente: serve un nuovo fetch
   });
 
@@ -264,7 +319,7 @@ function wireControls() {
   $('magRange').addEventListener('input', e => {
     state.filters.minMag = parseFloat(e.target.value);
     $('magValue').textContent = state.filters.minMag;
-    refreshView();
+    refreshView(true);
   });
 
   $('distanceSelect').addEventListener('change', onDistanceChange);
@@ -294,6 +349,7 @@ window.addEventListener('load', () => {
   initMap();
   wireControls();
   initCollapsibles();
+  initTimeline(onTimelineChange);
 
   // Badge connessione: aggiorna l'attività al variare di online/offline.
   window.addEventListener('online', renderActivityNow);

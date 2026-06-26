@@ -1,6 +1,6 @@
 'use strict';
 
-import { INGV_EVENT, PERIOD_DAYS, REGIONS, INGV_LIMIT } from '../config.js';
+import { INGV_EVENT, PERIOD_DAYS, REGIONS, INGV_LIMIT, YEAR_MIN_MAG } from '../config.js';
 import { fetchJson } from './http.js';
 
 // Formatta una data in ISO UTC senza millisecondi: YYYY-MM-DDTHH:MM:SS
@@ -48,6 +48,12 @@ export async function fetchIngv({ period, region }) {
     orderby: 'time',
     limit: String(INGV_LIMIT)
   });
+
+  // Finestra a 365 giorni: soglia di magnitudo automatica (payload contenuto).
+  if (period === 'year') {
+    const floor = YEAR_MIN_MAG[region] != null ? YEAR_MIN_MAG[region] : 4.0;
+    params.set('minmagnitude', String(floor));
+  }
 
   const bounds = (REGIONS[region] || {}).bounds;
   if (bounds) {

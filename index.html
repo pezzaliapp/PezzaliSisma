@@ -111,8 +111,10 @@
                 <option value="day">Ultime 24 ore</option>
                 <option value="week" selected>Ultimi 7 giorni</option>
                 <option value="month">Ultimi 30 giorni</option>
+                <option value="year">Ultimi 365 giorni</option>
               </select>
             </label>
+            <p id="floorNote" class="floorNote" hidden>A 365 giorni si applica una magnitudo minima automatica: Mondo ≥ 4.0, Italia/Mediterraneo ≥ 2.5 (per limitare i dati scaricati).</p>
             <label>Vista
               <select id="areaSelect">
                 <option value="world">Mondo</option>
@@ -180,19 +182,27 @@
     </aside>
 
     <section class="mapWrap">
-      <div id="map" role="region" aria-label="Mappa dei terremoti recenti"></div>
-      <div class="legend">
-        <span><i class="m1"></i> M &lt; 2</span>
-        <span><i class="m2"></i> M 2–3</span>
-        <span><i class="m3"></i> M 3–4</span>
-        <span><i class="m4"></i> M ≥ 4</span>
-        <span class="legendProx" hidden>
-          <span class="legendSep">·</span>
-          <span><i class="p25"></i> ≤25</span>
-          <span><i class="p50"></i> ≤50</span>
-          <span><i class="p100"></i> ≤100</span>
-          <span><i class="p200"></i> ≤200 km</span>
-        </span>
+      <div class="mapHolder">
+        <div id="map" role="region" aria-label="Mappa dei terremoti recenti"></div>
+        <div id="mapNote" class="mapNote" hidden></div>
+        <div class="legend">
+          <span><i class="m1"></i> M &lt; 2</span>
+          <span><i class="m2"></i> M 2–3</span>
+          <span><i class="m3"></i> M 3–4</span>
+          <span><i class="m4"></i> M ≥ 4</span>
+          <span class="legendProx" hidden>
+            <span class="legendSep">·</span>
+            <span><i class="p25"></i> ≤25</span>
+            <span><i class="p50"></i> ≤50</span>
+            <span><i class="p100"></i> ≤100</span>
+            <span><i class="p200"></i> ≤200 km</span>
+          </span>
+        </div>
+      </div>
+      <div class="timelineBar">
+        <button id="tlPlay" type="button" class="tlPlay" aria-label="Riproduci o metti in pausa la timeline">▶</button>
+        <input id="tlRange" type="range" min="0" max="100" value="100" step="1" aria-label="Cursore temporale della timeline" />
+        <span id="tlLabel" class="tlLabel">Tutti</span>
       </div>
     </section>
   </main>

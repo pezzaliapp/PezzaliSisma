@@ -24,6 +24,9 @@ ed è installabile come app (PWA).
   - strategia **Auto**: Italia/Mediterraneo → INGV, Mondo → USGS, con **fallback automatico**
   - selettore manuale **Auto / USGS / INGV**, **fonte indicata per ogni evento**
   - normalizzazione tra schemi diversi, nessun dato inventato, nessun backend
+- ⏳ **Timeline + playback** (Milestone C1): periodi **24h / 7g / 30g / 365g**, con cursore temporale e riproduzione.
+  - A **365 giorni** si applica una **magnitudo minima automatica** per limitare i dati: **Mondo ≥ 4.0**, **Italia/Mediterraneo ≥ 2.5** (dichiarata in app).
+  - Tetto di **3000 marker** disegnati (i più recenti) con nota visibile; i conteggi statistici restano sull'insieme completo.
 - 📍 Marker proporzionali alla magnitudo con **popup** di dettaglio completo
 - 📋 **Elenco** degli ultimi eventi (click per centrare la mappa)
 - 🎚️ **Filtri**: periodo, vista geografica, magnitudo minima, distanza da me
@@ -78,6 +81,7 @@ PezzaliSisma/
    ├─ geocode.js           # reverse geocoding opt-in (OSM Nominatim)
    ├─ dashboard.js         # card "Attività attuale" (eventi, mag max, sorgente, connessione, fallback)
    ├─ overview.js          # "Situazione generale" Italia/Mondo (ultime 24h, USGS)
+   ├─ timeline.js          # timeline + playback temporale (24h/7g/30g/365g)
    ├─ map.js               # mappa, marker eventi, marker utente, cerchi, popup, alone "Nuovo"
    └─ ui.js                # rendering lista, statistiche, banner, card più vicino
 ```

@@ -15,7 +15,7 @@ function resolveOrder(region, source) {
 }
 
 function fetchFrom(key, period, region) {
-  return key === 'INGV' ? fetchIngv({ period, region }) : fetchUsgs({ period });
+  return key === 'INGV' ? fetchIngv({ period, region }) : fetchUsgs({ period, region });
 }
 
 // Carica gli eventi applicando la strategia e il fallback automatico.

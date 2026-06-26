@@ -1,6 +1,6 @@
 'use strict';
 
-import { REGIONS, DISTANCE_BANDS, PROXIMITY_COLORS } from './config.js';
+import { REGIONS, DISTANCE_BANDS, PROXIMITY_COLORS, MAX_MARKERS } from './config.js';
 import {
   colorForMag,
   radiusForMag,
@@ -128,13 +128,20 @@ function popupHtml(e) {
 // Il riempimento codifica la magnitudo (scala calda); il bordo codifica la
 // prossimità alla posizione utente (scala fredda), così "piccolo ma vicino" e
 // "forte ma lontano" sono distinguibili a colpo d'occhio.
-export function drawMarkers(events, regionKey, userPos) {
+export function drawMarkers(events, regionKey, userPos, opts = {}) {
+  const fit = opts.fit !== false; // durante scrub/playback NON riadattare la vista
   markerLayer.clearLayers();
   highlightLayer.clearLayers();
   markerById.clear();
   const pts = [];
 
-  events.forEach(e => {
+  // Tetto di rendering: gli eventi sono ordinati dal più recente, quindi si
+  // disegnano i più recenti fino a MAX_MARKERS. I conteggi statistici, calcolati
+  // altrove, restano sull'insieme completo.
+  const total = events.length;
+  const drawn = total > MAX_MARKERS ? events.slice(0, MAX_MARKERS) : events;
+
+  drawn.forEach(e => {
     const hasDist = userPos && e._dist != null;
     const marker = L.circleMarker([e.lat, e.lon], {
       radius: radiusForMag(e.mag),
@@ -148,10 +155,10 @@ export function drawMarkers(events, regionKey, userPos) {
     pts.push([e.lat, e.lon]);
   });
 
-  // Evidenzia l'evento più recente (events è ordinato per tempo discendente)
+  // Evidenzia l'evento più recente (drawn è ordinato per tempo discendente)
   // con un alone pulsante discreto e l'etichetta "Nuovo". Non intercetta i click.
-  if (events.length) {
-    const last = events[0];
+  if (drawn.length) {
+    const last = drawn[0];
     const icon = L.divIcon({
       className: 'pulseIcon',
       html: '<span class="pulse-ring"></span><span class="new-badge">Nuovo</span>',
@@ -168,15 +175,19 @@ export function drawMarkers(events, regionKey, userPos) {
   // Aggiorna la legenda (la parte di prossimità appare solo con posizione nota).
   updateLegend(userPos);
 
-  // Adatta la vista includendo anche la posizione utente, se presente.
-  if (userPos) pts.push([userPos.lat, userPos.lon]);
-  if (pts.length) {
-    map.fitBounds(pts, { padding: [40, 40], maxZoom: 9 });
-  } else {
-    const region = REGIONS[regionKey] || REGIONS.world;
-    map.setView(region.view, region.zoom);
+  // Adatta la vista solo quando richiesto (non durante scrub/playback timeline).
+  if (fit) {
+    if (userPos) pts.push([userPos.lat, userPos.lon]);
+    if (pts.length) {
+      map.fitBounds(pts, { padding: [40, 40], maxZoom: 9 });
+    } else {
+      const region = REGIONS[regionKey] || REGIONS.world;
+      map.setView(region.view, region.zoom);
+    }
+    setTimeout(() => map.invalidateSize(), 100);
   }
-  setTimeout(() => map.invalidateSize(), 100);
+
+  return { total, drawn: drawn.length };
 }
 
 // Mostra/nasconde la parte "prossimità" della legenda in base alla posizione.
