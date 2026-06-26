@@ -84,6 +84,11 @@ export const PERSONAL_CARD_KEY = 'pezzalisisma:card';
 // NON è cifratura: i dati della scheda restano in chiaro in PERSONAL_CARD_KEY.
 export const PERSONAL_LOCK_KEY = 'pezzalisisma:cardlock';
 
+// Soglia "Modalità Evento" (A5): evidenzia eventi GIÀ AVVENUTI vicini ai luoghi
+// salvati. Configurabile dall'utente, salvata SOLO su questo dispositivo.
+export const PLACE_THRESHOLD_KEY = 'pezzalisisma:placethreshold';
+export const PLACE_THRESHOLD_DEFAULT = { minMag: 3, maxKm: 50 };
+
 // Reverse geocoding OPZIONALE e su richiesta esplicita (servizio pubblico OSM).
 export const NOMINATIM_REVERSE = 'https://nominatim.openstreetmap.org/reverse';
 // Chiave localStorage del consenso una-tantum al reverse geocoding.

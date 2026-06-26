@@ -8,7 +8,7 @@
 // Precache resiliente: un singolo asset non scaricabile NON blocca l'install,
 // evitando di restare incastrati su una versione vecchia.
 
-const VERSION = 'v20';
+const VERSION = 'v21';
 const SHELL_CACHE = 'sisma-shell-' + VERSION;
 const DATA_CACHE = 'sisma-data-' + VERSION;
 const TILE_CACHE = 'sisma-tiles-' + VERSION;
@@ -42,6 +42,7 @@ const SHELL_ASSETS = [
   './src/personalcard.js',
   './src/cardlock.js',
   './src/share.js',
+  './src/eventmode.js',
   './src/sismaradar/engine.js',
   './src/sismaradar/radar.js',
   './src/map.js',

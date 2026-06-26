@@ -20,7 +20,7 @@
       <p>Monitoraggio sismico reale. Non prevede terremoti: mostra dati, posizione e segnali statistici.</p>
     </div>
     <div class="actions">
-      <button id="prepBtn" type="button" class="prepBtn">Preparazione &amp; Emergenza</button>
+      <button id="prepBtn" type="button" class="prepBtn">Preparazione &amp; Emergenza<span id="prepBtnFlag" class="prepBtnFlag" hidden>Evento vicino</span></button>
       <button id="infoBtn" type="button" class="ghost">Info</button>
       <button id="refreshBtn" type="button">Aggiorna</button>
     </div>
@@ -306,6 +306,15 @@
 
       <div class="prepBody">
 
+        <!-- MODALITÀ EVENTO (A5): evento già avvenuto, di fonte ufficiale, vicino a un luogo salvato -->
+        <div id="eventModeBanner" class="eventModeBanner" role="status" aria-live="polite" hidden>
+          <strong class="emTitle">Evento rilevato vicino a un tuo luogo</strong>
+          <div id="emDetails" class="emDetails"></div>
+          <p id="emMore" class="emMore" hidden></p>
+          <p class="emNote">Evento già avvenuto, da fonte ufficiale. PezzaliSisma non invia avvisi e non sostituisce i sistemi ufficiali.</p>
+          <button id="emCosaFare" type="button">Cosa fare</button>
+        </div>
+
         <!-- PRIMA: preparazione -->
         <section id="panelPrima" class="prepPanelTab" role="tabpanel" aria-labelledby="tabPrima">
           <h3>Kit di emergenza</h3>
@@ -352,6 +361,30 @@
         <!-- LA MIA FAMIGLIA: luoghi importanti (solo localStorage) -->
         <section id="panelFamiglia" class="prepPanelTab" role="tabpanel" aria-labelledby="tabFamiglia" hidden>
           <p class="prepPrivacy">I luoghi sono salvati <strong>solo su questo dispositivo</strong> e non vengono mai inviati.</p>
+
+          <fieldset class="thresholdRow">
+            <legend>Soglia «Modalità Evento»</legend>
+            <label>Magnitudo minima
+              <select id="thMinMag">
+                <option value="2.5">≥ 2.5</option>
+                <option value="3">≥ 3</option>
+                <option value="3.5">≥ 3.5</option>
+                <option value="4">≥ 4</option>
+                <option value="4.5">≥ 4.5</option>
+                <option value="5">≥ 5</option>
+              </select>
+            </label>
+            <label>Distanza massima
+              <select id="thMaxKm">
+                <option value="25">≤ 25 km</option>
+                <option value="50">≤ 50 km</option>
+                <option value="100">≤ 100 km</option>
+                <option value="200">≤ 200 km</option>
+              </select>
+            </label>
+            <p class="thNote">Evidenzia eventi <strong>già avvenuti</strong>, di fonte ufficiale, vicini ai tuoi luoghi. Dipende dall'area e dal periodo selezionati e si aggiorna quando l'app è aperta. Non è una previsione né un'allerta.</p>
+          </fieldset>
+
           <form id="placeForm" class="placeForm">
             <label>Tipo
               <select id="placeLabel">
