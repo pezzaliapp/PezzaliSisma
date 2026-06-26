@@ -299,6 +299,7 @@
         <button class="prepTab" type="button" role="tab" id="tabDurante" aria-controls="panelDurante" aria-selected="false" tabindex="-1">Durante</button>
         <button class="prepTab" type="button" role="tab" id="tabDopo" aria-controls="panelDopo" aria-selected="false" tabindex="-1">Dopo</button>
         <button class="prepTab" type="button" role="tab" id="tabFamiglia" aria-controls="panelFamiglia" aria-selected="false" tabindex="-1">La mia famiglia</button>
+        <button class="prepTab" type="button" role="tab" id="tabScheda" aria-controls="panelScheda" aria-selected="false" tabindex="-1">Scheda personale</button>
         <button class="prepTab" type="button" role="tab" id="tabNumeri" aria-controls="panelNumeri" aria-selected="false" tabindex="-1">Numeri utili</button>
       </div>
 
@@ -386,6 +387,58 @@
             <button id="placeClear" type="button" class="ghost danger" hidden>Cancella tutti</button>
           </div>
           <div id="placeList" class="placeList"></div>
+        </section>
+
+        <!-- SCHEDA PERSONALE: facoltativa, solo localStorage -->
+        <section id="panelScheda" class="prepPanelTab" role="tabpanel" aria-labelledby="tabScheda" hidden>
+          <p class="prepPrivacy">La Scheda personale è salvata <strong>solo su questo dispositivo</strong> e <strong>non viene mai inviata</strong> ad alcun server. Inserisci solo le informazioni che vuoi avere a portata di mano in emergenza. Chiunque abbia accesso a questo dispositivo sbloccato e al browser può visualizzarla. Tutti i campi sono facoltativi.</p>
+
+          <div id="cardSummary" class="cardSummary" hidden></div>
+
+          <form id="cardForm" class="placeForm">
+            <label>Nome
+              <input id="cardNome" type="text" maxlength="80" autocomplete="off" />
+            </label>
+            <label>Contatto ICE (in caso di emergenza)
+              <input id="cardIceName" type="text" maxlength="80" autocomplete="off" placeholder="Es. Maria Rossi" />
+            </label>
+            <label>Telefono ICE
+              <input id="cardIcePhone" type="tel" maxlength="40" autocomplete="off" placeholder="Es. +39 333 1234567" />
+            </label>
+            <label>Gruppo sanguigno
+              <select id="cardBlood">
+                <option value="">—</option>
+                <option value="0-">0−</option>
+                <option value="0+">0+</option>
+                <option value="A-">A−</option>
+                <option value="A+">A+</option>
+                <option value="B-">B−</option>
+                <option value="B+">B+</option>
+                <option value="AB-">AB−</option>
+                <option value="AB+">AB+</option>
+              </select>
+            </label>
+            <label>Allergie
+              <textarea id="cardAllergie" rows="2" maxlength="300"></textarea>
+            </label>
+            <label>Farmaci importanti
+              <textarea id="cardFarmaci" rows="2" maxlength="300"></textarea>
+            </label>
+            <label>Patologie rilevanti
+              <textarea id="cardPatologie" rows="2" maxlength="300"></textarea>
+            </label>
+            <label>Indirizzo
+              <input id="cardIndirizzo" type="text" maxlength="160" autocomplete="off" />
+            </label>
+            <label>Note
+              <textarea id="cardNote" rows="2" maxlength="300"></textarea>
+            </label>
+            <div id="cardMsg" class="placeMsg" role="status" aria-live="polite"></div>
+            <div class="placeFormBtns">
+              <button id="cardSave" type="submit">Salva scheda</button>
+              <button id="cardClear" type="button" class="ghost danger">Cancella scheda</button>
+            </div>
+          </form>
         </section>
 
         <!-- NUMERI UTILI -->

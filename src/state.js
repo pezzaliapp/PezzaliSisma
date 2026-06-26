@@ -15,6 +15,7 @@ export const state = {
   watchId: null,    // id del watch della Geolocation API
 
   places: [],       // "luoghi importanti" (La mia famiglia) — SOLO su questo dispositivo
+  card: null,       // "scheda personale" (A3) — SOLO su questo dispositivo
 
   filters: {
     period: 'week',   // day | week | month

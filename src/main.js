@@ -35,6 +35,7 @@ import { refreshRadar } from './sismaradar/radar.js';
 import { initInfo } from './info.js';
 import { initPrepare } from './prepare.js';
 import { initPlaces } from './places.js';
+import { initCard } from './personalcard.js';
 import {
   loadStoredPosition,
   storePosition,
@@ -404,6 +405,7 @@ window.addEventListener('load', () => {
   initInfo();
   initPrepare();
   initPlaces();
+  initCard();
 
   // Badge connessione: aggiorna l'attività al variare di online/offline.
   window.addEventListener('online', renderActivityNow);

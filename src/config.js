@@ -75,6 +75,10 @@ export const STORAGE_KEY = 'pezzalisisma:userpos';
 // Salvati SOLO su questo dispositivo, mai trasmessi.
 export const PLACES_KEY = 'pezzalisisma:places';
 
+// Chiave localStorage della "Scheda personale" (A3). SOLO su questo dispositivo,
+// mai trasmessa. Nessuna cifratura: protezione = blocco schermo del dispositivo.
+export const PERSONAL_CARD_KEY = 'pezzalisisma:card';
+
 // Reverse geocoding OPZIONALE e su richiesta esplicita (servizio pubblico OSM).
 export const NOMINATIM_REVERSE = 'https://nominatim.openstreetmap.org/reverse';
 // Chiave localStorage del consenso una-tantum al reverse geocoding.

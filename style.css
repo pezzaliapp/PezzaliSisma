@@ -215,6 +215,15 @@ body.noScroll{overflow:hidden}
 .placeNote{font-style:italic}
 .placeActions{display:flex;gap:8px;flex:0 0 auto}
 .placeActions button{min-height:40px}
+/* Scheda personale (A3) */
+.prepPanelTab textarea{width:100%;margin-top:6px;background:#0d1324;color:white;border:1px solid var(--line);border-radius:8px;padding:8px;font:inherit;line-height:1.4;resize:vertical;min-height:44px}
+.cardSummary{margin:12px 0 4px;padding:12px 14px;background:#0d1324;border:1px solid var(--line);border-radius:14px}
+.cardSummary h3{margin:0 0 8px;font-size:15px}
+.cardRow{display:flex;justify-content:space-between;gap:12px;padding:4px 0;border-top:1px solid var(--line)}
+.cardRow:first-of-type{border-top:0}
+.cardRow span{color:var(--muted);font-size:13px;flex:0 0 auto}
+.cardRow b{color:var(--text);text-align:right;word-break:break-word}
+.cardRow b a{color:#bff0d0}
 @media(max-width:900px){
   .prepPanel{max-height:94dvh}
 }
