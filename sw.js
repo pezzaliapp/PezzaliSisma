@@ -8,7 +8,7 @@
 // Precache resiliente: un singolo asset non scaricabile NON blocca l'install,
 // evitando di restare incastrati su una versione vecchia.
 
-const VERSION = 'v12';
+const VERSION = 'v13';
 const SHELL_CACHE = 'sisma-shell-' + VERSION;
 const DATA_CACHE = 'sisma-data-' + VERSION;
 const TILE_CACHE = 'sisma-tiles-' + VERSION;
@@ -21,6 +21,7 @@ const SHELL_ASSETS = [
   './icon.svg',
   './vendor/leaflet/leaflet.css',
   './vendor/leaflet/leaflet.js',
+  './vendor/leaflet-heat/leaflet-heat.js',
   './src/main.js',
   './src/config.js',
   './src/state.js',

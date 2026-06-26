@@ -19,7 +19,9 @@ export const state = {
     minMag: 0,        // magnitudo minima
     region: 'italy',  // world | italy | mediterranean
     maxDistance: 0,   // 0 = tutte; oppure 25 | 50 | 100 | 200 (km)
-    source: 'auto'    // auto | USGS | INGV
+    source: 'auto',   // auto | USGS | INGV
+    showMarkers: true, // layer marker visibile
+    showHeat: false    // layer heatmap visibile (indipendente)
   },
 
   activeSource: null, // fonte effettivamente usata nell'ultimo caricamento

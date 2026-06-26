@@ -122,6 +122,11 @@
               </select>
             </label>
             <p id="floorNote" class="floorNote" hidden>A 365 giorni si applica una magnitudo minima automatica: Mondo ≥ 4.0, Italia/Mediterraneo ≥ 2.5 (per limitare i dati scaricati).</p>
+            <fieldset class="layersRow">
+              <legend>Livelli mappa</legend>
+              <label class="chkRow"><input id="markersChk" type="checkbox" checked /><span>Marker</span></label>
+              <label class="chkRow"><input id="heatChk" type="checkbox" /><span>Heatmap</span></label>
+            </fieldset>
             <label>Vista
               <select id="areaSelect">
                 <option value="world">Mondo</option>
@@ -220,6 +225,7 @@
   </footer>
 
   <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="vendor/leaflet-heat/leaflet-heat.js"></script>
   <script type="module" src="src/main.js"></script>
 </body>
 </html>

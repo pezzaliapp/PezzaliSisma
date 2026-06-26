@@ -6,16 +6,21 @@ import {
   radiusForMag,
   proximityColor,
   proximityWeight,
+  heatIntensity,
   fmtTime
 } from './geo.js';
+
+// Tetto di punti per la heatmap (canvas efficiente, ma cap per sicurezza mobile).
+const HEAT_MAX = 5000;
 
 // `L` è la variabile globale fornita da Leaflet (caricato in index.html).
 const L = window.L;
 
 let map = null;
-let markerLayer = null;     // eventi sismici
+let markerLayer = null;     // eventi sismici (marker)
 let userLayer = null;       // posizione utente + cerchi di distanza
 let highlightLayer = null;  // alone "Nuovo" sull'ultimo evento
+let heatLayer = null;       // layer heatmap (Leaflet.heat)
 let lockBtnEl = null;       // pulsante "Blocca/Sblocca mappa"
 let mapInteractive = true;  // true = la mappa cattura i gesti (pan/zoom)
 let mqMobile = null;        // media query mobile
@@ -130,56 +135,55 @@ function popupHtml(e) {
 // "forte ma lontano" sono distinguibili a colpo d'occhio.
 export function drawMarkers(events, regionKey, userPos, opts = {}) {
   const fit = opts.fit !== false; // durante scrub/playback NON riadattare la vista
+  const showMarkers = opts.markers !== false; // marker attivabili
+  const showHeat = !!opts.heat;               // heatmap attivabile (indipendente)
+
   markerLayer.clearLayers();
   highlightLayer.clearLayers();
   markerById.clear();
-  const pts = [];
 
-  // Tetto di rendering: gli eventi sono ordinati dal più recente, quindi si
-  // disegnano i più recenti fino a MAX_MARKERS. I conteggi statistici, calcolati
-  // altrove, restano sull'insieme completo.
+  // Tetto di rendering marker: eventi ordinati dal più recente -> i più recenti
+  // fino a MAX_MARKERS. I conteggi statistici, calcolati altrove, restano sul totale.
   const total = events.length;
   const drawn = total > MAX_MARKERS ? events.slice(0, MAX_MARKERS) : events;
+  const pts = drawn.map(e => [e.lat, e.lon]);
 
-  drawn.forEach(e => {
-    const hasDist = userPos && e._dist != null;
-    const marker = L.circleMarker([e.lat, e.lon], {
-      radius: radiusForMag(e.mag),
-      color: hasDist ? proximityColor(e._dist) : '#ffffff',
-      weight: hasDist ? proximityWeight(e._dist) : 1,
-      fillColor: colorForMag(e.mag),
-      fillOpacity: 0.82
-    }).bindPopup(popupHtml(e));
-    marker.addTo(markerLayer);
-    markerById.set(e.id, marker);
-    pts.push([e.lat, e.lon]);
-  });
-
-  // Evidenzia l'evento più recente (drawn è ordinato per tempo discendente)
-  // con un alone pulsante discreto e l'etichetta "Nuovo". Non intercetta i click.
-  if (drawn.length) {
-    const last = drawn[0];
-    const icon = L.divIcon({
-      className: 'pulseIcon',
-      html: '<span class="pulse-ring"></span><span class="new-badge">Nuovo</span>',
-      iconSize: [0, 0]
+  if (showMarkers) {
+    drawn.forEach(e => {
+      const hasDist = userPos && e._dist != null;
+      const marker = L.circleMarker([e.lat, e.lon], {
+        radius: radiusForMag(e.mag),
+        color: hasDist ? proximityColor(e._dist) : '#ffffff',
+        weight: hasDist ? proximityWeight(e._dist) : 1,
+        fillColor: colorForMag(e.mag),
+        fillOpacity: 0.82
+      }).bindPopup(popupHtml(e));
+      marker.addTo(markerLayer);
+      markerById.set(e.id, marker);
     });
-    L.marker([last.lat, last.lon], {
-      icon,
-      interactive: false,
-      keyboard: false,
-      zIndexOffset: 1000
-    }).addTo(highlightLayer);
+
+    // Evidenzia l'evento più recente con alone pulsante + etichetta "Nuovo".
+    if (drawn.length) {
+      const last = drawn[0];
+      const icon = L.divIcon({
+        className: 'pulseIcon',
+        html: '<span class="pulse-ring"></span><span class="new-badge">Nuovo</span>',
+        iconSize: [0, 0]
+      });
+      L.marker([last.lat, last.lon], {
+        icon, interactive: false, keyboard: false, zIndexOffset: 1000
+      }).addTo(highlightLayer);
+    }
   }
 
-  // Aggiorna la legenda (la parte di prossimità appare solo con posizione nota).
+  updateHeat(showHeat ? events : null);
   updateLegend(userPos);
 
   // Adatta la vista solo quando richiesto (non durante scrub/playback timeline).
   if (fit) {
-    if (userPos) pts.push([userPos.lat, userPos.lon]);
-    if (pts.length) {
-      map.fitBounds(pts, { padding: [40, 40], maxZoom: 9 });
+    const bounds = userPos ? pts.concat([[userPos.lat, userPos.lon]]) : pts;
+    if (bounds.length) {
+      map.fitBounds(bounds, { padding: [40, 40], maxZoom: 9 });
     } else {
       const region = REGIONS[regionKey] || REGIONS.world;
       map.setView(region.view, region.zoom);
@@ -187,7 +191,28 @@ export function drawMarkers(events, regionKey, userPos, opts = {}) {
     setTimeout(() => map.invalidateSize(), 100);
   }
 
-  return { total, drawn: drawn.length };
+  return { total, drawn: showMarkers ? drawn.length : 0 };
+}
+
+// Aggiorna/azzera il layer heatmap. Intensità per magnitudo; densità dalla
+// sovrapposizione. `events` null/vuoto -> rimuove il layer.
+function updateHeat(events) {
+  if (!L.heatLayer) return; // plugin non disponibile: nessun errore
+  if (!events || !events.length) {
+    if (heatLayer) { map.removeLayer(heatLayer); heatLayer = null; }
+    return;
+  }
+  const src = events.length > HEAT_MAX ? events.slice(0, HEAT_MAX) : events;
+  const points = src.map(e => [e.lat, e.lon, heatIntensity(e.mag)]);
+  if (!heatLayer) {
+    heatLayer = L.heatLayer(points, {
+      radius: 25, blur: 18, max: 1.0, maxZoom: 9, minOpacity: 0.25
+    });
+    heatLayer.addTo(map);
+  } else {
+    heatLayer.setLatLngs(points);
+    if (!map.hasLayer(heatLayer)) heatLayer.addTo(map);
+  }
 }
 
 // Mostra/nasconde la parte "prossimità" della legenda in base alla posizione.

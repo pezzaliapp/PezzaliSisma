@@ -73,6 +73,12 @@ export function radiusForMag(m) {
   return Math.max(6, Math.min(22, 5 + (Number(m) || 0) * 3));
 }
 
+// Intensità heatmap [0.15..1] in base alla magnitudo. La densità (somma delle
+// intensità sovrapposte) emerge naturalmente da Leaflet.heat.
+export function heatIntensity(m) {
+  return Math.max(0.15, Math.min(1, (Number(m) || 0) / 6));
+}
+
 // Formatta un timestamp (ms) in data/ora locale italiana.
 export function fmtTime(ms) {
   return new Date(ms).toLocaleString('it-IT', {

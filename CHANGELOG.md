@@ -2,6 +2,12 @@
 
 Tutte le modifiche rilevanti del progetto PezzaliSisma.
 
+## Milestone C2 — Heatmap
+- **Layer heatmap** attivabile/disattivabile, **indipendente** dai marker (entrambi selezionabili: "Livelli mappa").
+- **Leaflet.heat internalizzato** in `vendor/leaflet-heat/` (nessun CDN).
+- Intensità basata sulla **magnitudo**; la **densità** emerge dalla sovrapposizione dei punti.
+- Performance: layer canvas + tetto di 5000 punti heatmap; comportamento mappa/timeline/SismaRadar/geolocalizzazione/sorgenti invariato.
+
 ## Milestone C3 — SismaRadar base
 - Card SismaRadar trasformata da segnaposto a **pannello di analisi statistica** di eventi **già registrati** (nessuna previsione, nessun allarme).
 - Calcoli sulla vista/finestra corrente: numero eventi, magnitudo massima e media, profondità media, eventi superficiali ≤10 km, **concentrazione geografica** (griglia ~1°), **sciami/cluster** semplici.

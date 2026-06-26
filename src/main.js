@@ -111,15 +111,32 @@ function applyCursorAndRender(fit) {
   state.filtered = cur ? state.filtAll.filter(e => e.time <= cur) : state.filtAll;
   state.nearest = findNearest(state.base, state.userPos);
 
-  const info = drawMarkers(state.filtered, state.filters.region, state.userPos, { fit });
+  const info = drawMarkers(state.filtered, state.filters.region, state.userPos, {
+    fit,
+    markers: state.filters.showMarkers,
+    heat: state.filters.showHeat
+  });
   if (state.userPos) drawUserLayer(state.userPos);
   else clearUserLayer();
 
   renderList(state.filtered, e => focusEvent(e.lat, e.lon));
   renderActivityNow();
   renderNearest(state.nearest, e => focusEvent(e.lat, e.lon), onLocateClick);
-  renderImportant(mostImportant(state.filtered), e => openEventPopup(e.id));
+  renderImportant(mostImportant(state.filtered), e => {
+    focusEvent(e.lat, e.lon); // centra anche se i marker sono nascosti
+    openEventPopup(e.id);
+  });
   renderBanner(state.userPos);
+  updateMapNote(info);
+}
+
+// Ridisegna solo i layer della mappa (toggle marker/heatmap) senza riadattare.
+function redrawMapLayers() {
+  const info = drawMarkers(state.filtered, state.filters.region, state.userPos, {
+    fit: false,
+    markers: state.filters.showMarkers,
+    heat: state.filters.showHeat
+  });
   updateMapNote(info);
 }
 
@@ -329,6 +346,15 @@ function wireControls() {
     state.filters.minMag = parseFloat(e.target.value);
     $('magValue').textContent = state.filters.minMag;
     refreshView(true);
+  });
+
+  $('markersChk').addEventListener('change', e => {
+    state.filters.showMarkers = e.target.checked;
+    redrawMapLayers();
+  });
+  $('heatChk').addEventListener('change', e => {
+    state.filters.showHeat = e.target.checked;
+    redrawMapLayers();
   });
 
   $('distanceSelect').addEventListener('change', onDistanceChange);

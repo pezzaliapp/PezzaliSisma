@@ -27,6 +27,7 @@ ed è installabile come app (PWA).
 - ⏳ **Timeline + playback** (Milestone C1): periodi **24h / 7g / 30g / 365g**, con cursore temporale e riproduzione.
   - A **365 giorni** si applica una **magnitudo minima automatica** per limitare i dati: **Mondo ≥ 4.0**, **Italia/Mediterraneo ≥ 2.5** (dichiarata in app).
   - Tetto di **3000 marker** disegnati (i più recenti) con nota visibile; i conteggi statistici restano sull'insieme completo.
+- 🔥 **Heatmap** (Milestone C2): layer attivabile, **indipendente** dai marker ("Livelli mappa"). Intensità per **magnitudo**, densità dalla sovrapposizione. Libreria **Leaflet.heat internalizzata** (`vendor/leaflet-heat/`, nessun CDN), tetto 5000 punti.
 - 📍 Marker proporzionali alla magnitudo con **popup** di dettaglio completo
 - 📋 **Elenco** degli ultimi eventi (click per centrare la mappa)
 - 🎚️ **Filtri**: periodo, vista geografica, magnitudo minima, distanza da me
