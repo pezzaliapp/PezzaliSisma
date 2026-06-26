@@ -1,12 +1,14 @@
 'use strict';
 
-// Service worker di base (Vanilla, nessuna build).
-// Strategie differenziate:
-//  - app-shell (file locali): cache-first con precache all'install
-//  - dati USGS: network-first con fallback alla cache (ultimo dato noto offline)
-//  - tiles mappa / Leaflet CDN: cache-first (le tiles sono immutabili)
+// Service worker (Vanilla, nessuna build). Strategie:
+//  - navigazione/HTML  -> network-first  (online = sempre l'ultima index)
+//  - JS/CSS same-origin -> stale-while-revalidate (si auto-aggiornano)
+//  - tiles mappa        -> cache-first    (immutabili)
+//  - dati USGS/INGV     -> network-first  (ultimo dato noto offline)
+// Precache resiliente: un singolo asset non scaricabile NON blocca l'install,
+// evitando di restare incastrati su una versione vecchia.
 
-const VERSION = 'v11';
+const VERSION = 'v12';
 const SHELL_CACHE = 'sisma-shell-' + VERSION;
 const DATA_CACHE = 'sisma-data-' + VERSION;
 const TILE_CACHE = 'sisma-tiles-' + VERSION;
@@ -40,44 +42,68 @@ const SHELL_ASSETS = [
 ];
 
 self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(SHELL_CACHE)
-      .then(cache => cache.addAll(SHELL_ASSETS))
-      .then(() => self.skipWaiting())
-  );
+  event.waitUntil((async () => {
+    const cache = await caches.open(SHELL_CACHE);
+    // Resiliente: i fallimenti dei singoli asset non interrompono l'install.
+    await Promise.allSettled(SHELL_ASSETS.map(u => cache.add(u)));
+    await self.skipWaiting();
+  })());
 });
 
 self.addEventListener('activate', event => {
   const keep = [SHELL_CACHE, DATA_CACHE, TILE_CACHE];
-  event.waitUntil(
-    caches.keys()
-      .then(keys => Promise.all(keys.filter(k => !keep.includes(k)).map(k => caches.delete(k))))
-      .then(() => self.clients.claim())
-  );
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.filter(k => !keep.includes(k)).map(k => caches.delete(k)));
+    await self.clients.claim();
+  })());
 });
 
-// Network-first: prova la rete, in caso di errore usa la cache.
+function isNavigation(request) {
+  if (request.mode === 'navigate') return true;
+  const accept = request.headers.get('accept') || '';
+  return accept.includes('text/html');
+}
+
+// Network-first: rete se possibile (cache solo risposte valide), altrimenti cache.
 async function networkFirst(request, cacheName) {
   const cache = await caches.open(cacheName);
   try {
     const response = await fetch(request);
-    cache.put(request, response.clone());
+    if (response && response.ok) cache.put(request, response.clone());
     return response;
   } catch (err) {
     const cached = await cache.match(request);
     if (cached) return cached;
+    if (isNavigation(request)) {
+      const idx = await cache.match('./index.html');
+      if (idx) return idx;
+    }
     throw err;
   }
 }
 
-// Cache-first: usa la cache se presente, altrimenti scarica e memorizza.
+// Cache-first: cache se presente, altrimenti rete (e memorizza).
 async function cacheFirst(request, cacheName) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
   if (cached) return cached;
   const response = await fetch(request);
-  cache.put(request, response.clone());
+  if (response && response.ok) cache.put(request, response.clone());
   return response;
+}
+
+// Stale-while-revalidate: serve la cache subito ma riscarica in background.
+async function staleWhileRevalidate(request, cacheName) {
+  const cache = await caches.open(cacheName);
+  const cached = await cache.match(request);
+  const network = fetch(request)
+    .then(response => {
+      if (response && response.ok) cache.put(request, response.clone());
+      return response;
+    })
+    .catch(() => null);
+  return cached || (await network) || fetch(request);
 }
 
 self.addEventListener('fetch', event => {
@@ -92,15 +118,21 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Tiles OpenStreetMap → cache-first (le tiles sono immutabili).
+  // Tiles OpenStreetMap → cache-first (immutabili).
   if (url.hostname.endsWith('tile.openstreetmap.org')) {
     event.respondWith(cacheFirst(request, TILE_CACHE));
     return;
   }
 
-  // App-shell locale → cache-first con fallback rete.
+  // Stessa origine.
   if (url.origin === self.location.origin) {
-    event.respondWith(cacheFirst(request, SHELL_CACHE));
+    if (isNavigation(request)) {
+      // HTML sempre fresco quando online; cache come fallback offline.
+      event.respondWith(networkFirst(request, SHELL_CACHE));
+    } else {
+      // JS/CSS/asset: veloci dalla cache ma si auto-aggiornano in background.
+      event.respondWith(staleWhileRevalidate(request, SHELL_CACHE));
+    }
     return;
   }
 
