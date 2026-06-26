@@ -8,7 +8,7 @@
 // Precache resiliente: un singolo asset non scaricabile NON blocca l'install,
 // evitando di restare incastrati su una versione vecchia.
 
-const VERSION = 'v14';
+const VERSION = 'v15';
 const SHELL_CACHE = 'sisma-shell-' + VERSION;
 const DATA_CACHE = 'sisma-data-' + VERSION;
 const TILE_CACHE = 'sisma-tiles-' + VERSION;
@@ -37,6 +37,7 @@ const SHELL_ASSETS = [
   './src/overview.js',
   './src/timeline.js',
   './src/info.js',
+  './src/prepare.js',
   './src/sismaradar/engine.js',
   './src/sismaradar/radar.js',
   './src/map.js',

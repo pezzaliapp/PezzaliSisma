@@ -20,6 +20,7 @@
       <p>Monitoraggio sismico reale. Non prevede terremoti: mostra dati, posizione e segnali statistici.</p>
     </div>
     <div class="actions">
+      <button id="prepBtn" type="button" class="prepBtn">Preparazione &amp; Emergenza</button>
       <button id="infoBtn" type="button" class="ghost">Info</button>
       <button id="refreshBtn" type="button">Aggiorna</button>
     </div>
@@ -277,6 +278,88 @@
           <p>Molti telefoni <strong>Android</strong> includono il <strong>Sistema di allerta terremoti di Android</strong> (Android Earthquake Alerts), realizzato da Google: gli accelerometri degli smartphone rilevano lo scuotimento e, dove il servizio è attivo, possono inviare un avviso nei primi secondi.</p>
           <p>È un sistema <strong>indipendente da PezzaliSisma</strong>. Per verificarlo apri <strong>Impostazioni → Sicurezza ed emergenza → Avvisi sismici</strong> (la voce e la disponibilità variano per paese, versione di Android e produttore).</p>
           <p>PezzaliSisma <strong>non invia notifiche né allerte</strong> e non sostituisce i sistemi ufficiali: è uno strumento di consultazione di eventi già avvenuti. Per gli avvisi in tempo reale affidati al sistema del tuo dispositivo e alle autorità competenti.</p>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Preparazione & Emergenza (Milestone 1.1-A1): contenuti statici, consultabili offline -->
+  <div id="prepOverlay" class="prepOverlay" role="dialog" aria-modal="true" aria-labelledby="prepTitle" hidden>
+    <div class="prepPanel">
+      <div class="prepHead">
+        <h2 id="prepTitle">Preparazione &amp; Emergenza</h2>
+        <button id="prepClose" type="button" class="infoClose" aria-label="Chiudi">✕</button>
+      </div>
+
+      <p class="prepDisclaimer">PezzaliSisma utilizza dati ufficiali e fornisce informazioni di supporto. Non sostituisce i sistemi ufficiali di allerta della Protezione Civile.</p>
+
+      <div class="prepTabs" role="tablist" aria-label="Sezioni Preparazione e Emergenza">
+        <button class="prepTab" type="button" role="tab" id="tabPrima" aria-controls="panelPrima" aria-selected="true">Prima</button>
+        <button class="prepTab" type="button" role="tab" id="tabDurante" aria-controls="panelDurante" aria-selected="false" tabindex="-1">Durante</button>
+        <button class="prepTab" type="button" role="tab" id="tabDopo" aria-controls="panelDopo" aria-selected="false" tabindex="-1">Dopo</button>
+        <button class="prepTab" type="button" role="tab" id="tabNumeri" aria-controls="panelNumeri" aria-selected="false" tabindex="-1">Numeri utili</button>
+      </div>
+
+      <div class="prepBody">
+
+        <!-- PRIMA: preparazione -->
+        <section id="panelPrima" class="prepPanelTab" role="tabpanel" aria-labelledby="tabPrima">
+          <h3>Kit di emergenza</h3>
+          <p>Tieni pronto un kit, controllato periodicamente, in un punto noto a tutta la famiglia:</p>
+          <ul>
+            <li><strong>Acqua</strong> potabile in bottiglia</li>
+            <li><strong>Torcia</strong> e <strong>batterie</strong> di scorta</li>
+            <li><strong>Farmaci</strong> personali e kit di primo soccorso</li>
+            <li><strong>Documenti</strong> (copie) e un po' di contanti</li>
+            <li><strong>Radio</strong> a batterie per le comunicazioni</li>
+          </ul>
+          <h3>Punto di ritrovo familiare</h3>
+          <p>Concorda con i tuoi familiari <strong>un luogo sicuro</strong> dove ritrovarsi e un contatto di riferimento, nel caso non riusciate a rientrare a casa o a contattarvi.</p>
+          <h3>Metti in sicurezza la casa</h3>
+          <p>Fissa <strong>mobili alti, scaffali e oggetti pesanti</strong>; evita di tenere oggetti pesanti in alto; individua i punti più sicuri di ogni stanza e dove si chiudono <strong>gas, acqua ed elettricità</strong>.</p>
+          <h3>Prepara i bambini</h3>
+          <p>Spiega con calma cosa fare, senza spaventarli; insegna il punto di ritrovo e i numeri utili.</p>
+          <h3>Prepara gli animali domestici</h3>
+          <p>Prevedi guinzaglio/trasportino, una scorta d'acqua e di cibo e i documenti sanitari; individua dove potrebbero rifugiarsi.</p>
+          <p class="prepSource">Indicazioni ispirate alle raccomandazioni della Protezione Civile (vedi scheda «Numeri utili» per i link ufficiali).</p>
+        </section>
+
+        <!-- DURANTE: pochissimo testo, icone grandi -->
+        <section id="panelDurante" class="prepPanelTab" role="tabpanel" aria-labelledby="tabDurante" hidden>
+          <ul class="duringList">
+            <li><span class="ic" aria-hidden="true">🛡️</span> Proteggi testa e collo</li>
+            <li><span class="ic" aria-hidden="true">🪑</span> Riparati sotto un tavolo robusto</li>
+            <li><span class="ic" aria-hidden="true">🪟</span> Stai lontano dalle finestre</li>
+            <li><span class="ic" aria-hidden="true">🛗</span> Non usare gli ascensori</li>
+            <li><span class="ic" aria-hidden="true">🏢</span> Se sei all'aperto, allontanati dagli edifici</li>
+          </ul>
+        </section>
+
+        <!-- DOPO -->
+        <section id="panelDopo" class="prepPanelTab" role="tabpanel" aria-labelledby="tabDopo" hidden>
+          <ul>
+            <li><strong>Controlla eventuali feriti</strong> e presta i primi soccorsi se sai come fare.</li>
+            <li><strong>Verifica possibili fughe di gas</strong>: non accendere fiamme né interruttori; apri le finestre e chiudi il gas.</li>
+            <li><strong>Usa il telefono solo se necessario</strong>, per non sovraccaricare le linee.</li>
+            <li><strong>Segui le indicazioni degli enti ufficiali</strong> e allontanati da edifici lesionati.</li>
+          </ul>
+        </section>
+
+        <!-- NUMERI UTILI -->
+        <section id="panelNumeri" class="prepPanelTab" role="tabpanel" aria-labelledby="tabNumeri" hidden>
+          <p>In caso di pericolo immediato chiama il <strong>112</strong>.</p>
+          <ul class="callList">
+            <li><a class="callBtn" href="tel:112"><b>112</b><span>Numero Unico Emergenze</span></a></li>
+            <li><a class="callBtn" href="tel:115"><b>115</b><span>Vigili del Fuoco</span></a></li>
+            <li><a class="callBtn" href="tel:118"><b>118</b><span>Emergenza sanitaria</span></a></li>
+            <li><a class="callBtn" href="tel:1515"><b>1515</b><span>Emergenze ambientali e incendi boschivi</span></a></li>
+            <li><a class="callBtn" href="tel:1530"><b>1530</b><span>Guardia Costiera (emergenze in mare)</span></a></li>
+          </ul>
+          <div class="prepLinks">
+            <a href="https://www.protezionecivile.gov.it" target="_blank" rel="noopener">Protezione Civile — sito ufficiale</a>
+            <a href="https://www.ingv.it" target="_blank" rel="noopener">INGV — Istituto Nazionale di Geofisica e Vulcanologia</a>
+          </div>
         </section>
 
       </div>
