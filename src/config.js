@@ -79,6 +79,11 @@ export const PLACES_KEY = 'pezzalisisma:places';
 // mai trasmessa. Nessuna cifratura: protezione = blocco schermo del dispositivo.
 export const PERSONAL_CARD_KEY = 'pezzalisisma:card';
 
+// Chiave localStorage del blocco di visualizzazione OPZIONALE (A3-bis).
+// Memorizza solo { enabled, credId } (id opaco della credenziale WebAuthn).
+// NON è cifratura: i dati della scheda restano in chiaro in PERSONAL_CARD_KEY.
+export const PERSONAL_LOCK_KEY = 'pezzalisisma:cardlock';
+
 // Reverse geocoding OPZIONALE e su richiesta esplicita (servizio pubblico OSM).
 export const NOMINATIM_REVERSE = 'https://nominatim.openstreetmap.org/reverse';
 // Chiave localStorage del consenso una-tantum al reverse geocoding.

@@ -393,6 +393,25 @@
         <section id="panelScheda" class="prepPanelTab" role="tabpanel" aria-labelledby="tabScheda" hidden>
           <p class="prepPrivacy">La Scheda personale è salvata <strong>solo su questo dispositivo</strong> e <strong>non viene mai inviata</strong> ad alcun server. Inserisci solo le informazioni che vuoi avere a portata di mano in emergenza. Chiunque abbia accesso a questo dispositivo sbloccato e al browser può visualizzarla. Tutti i campi sono facoltativi.</p>
 
+          <div class="cardLockInfo">
+            <p class="cardLockNote">Questa protezione non cifra i dati. La scheda resta salvata solo sul dispositivo. Il blocco serve solo a richiedere una conferma biometrica/PIN prima della visualizzazione, quando supportato dal browser.</p>
+            <div class="cardLockBtns">
+              <button id="cardLockOn" type="button" class="ghost" hidden>Attiva blocco visualizzazione</button>
+              <button id="cardLockOff" type="button" class="ghost danger" hidden>Disattiva blocco visualizzazione</button>
+              <button id="cardLockNow" type="button" class="ghost" hidden>Blocca ora</button>
+            </div>
+            <p id="cardLockUnavail" class="cardLockUnavail" hidden>Blocco non disponibile su questo dispositivo o browser; la scheda resta utilizzabile normalmente.</p>
+            <div id="cardLockMsg" class="placeMsg" role="status" aria-live="polite"></div>
+          </div>
+
+          <div id="cardLockScreen" class="cardLockScreen" hidden>
+            <div class="cardLockIcon" aria-hidden="true">🔒</div>
+            <p>Scheda bloccata. Sblocca per visualizzare e modificare i dati, oppure usa «Disattiva blocco visualizzazione» qui sopra.</p>
+            <button id="cardUnlock" type="button">Sblocca</button>
+            <div id="cardUnlockMsg" class="placeMsg" role="status" aria-live="polite"></div>
+          </div>
+
+          <div id="cardContent">
           <div id="cardSummary" class="cardSummary" hidden></div>
 
           <form id="cardForm" class="placeForm">
@@ -439,6 +458,7 @@
               <button id="cardClear" type="button" class="ghost danger">Cancella scheda</button>
             </div>
           </form>
+          </div>
         </section>
 
         <!-- NUMERI UTILI -->

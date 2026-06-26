@@ -36,6 +36,7 @@ import { initInfo } from './info.js';
 import { initPrepare } from './prepare.js';
 import { initPlaces } from './places.js';
 import { initCard } from './personalcard.js';
+import { initCardLock } from './cardlock.js';
 import {
   loadStoredPosition,
   storePosition,
@@ -406,6 +407,7 @@ window.addEventListener('load', () => {
   initPrepare();
   initPlaces();
   initCard();
+  initCardLock();
 
   // Badge connessione: aggiorna l'attività al variare di online/offline.
   window.addEventListener('online', renderActivityNow);

@@ -16,6 +16,8 @@ export const state = {
 
   places: [],       // "luoghi importanti" (La mia famiglia) — SOLO su questo dispositivo
   card: null,       // "scheda personale" (A3) — SOLO su questo dispositivo
+  cardLocked: false,   // blocco visualizzazione attivo (A3-bis, persistito)
+  cardUnlocked: false, // sbloccata in questa sessione (solo in memoria)
 
   filters: {
     period: 'week',   // day | week | month

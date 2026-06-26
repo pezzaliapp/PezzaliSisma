@@ -143,6 +143,17 @@ sottopercorso come quello di GitHub Pages.
 
 ---
 
+## Scheda personale e blocco di visualizzazione
+
+- La **Scheda personale** (sezione «Preparazione & Emergenza») contiene campi **facoltativi** (nome, contatto/telefono ICE, gruppo sanguigno, allergie, farmaci, patologie, indirizzo, note), salvati **solo su questo dispositivo** in `localStorage` e **mai trasmessi**. «Cancella scheda» li rimuove.
+- È disponibile un **blocco di visualizzazione aggiuntivo e opzionale** basato su **WebAuthn** (autenticatore di piattaforma: Face ID/Touch ID/PIN), quando supportato dal browser.
+  - **Non è cifratura.** «Questa protezione non cifra i dati. La scheda resta salvata solo sul dispositivo. Il blocco serve solo a richiedere una conferma biometrica/PIN prima della visualizzazione, quando supportato dal browser.»
+  - L'app **non gestisce alcun dato biometrico** (Face ID/Touch ID/PIN sono gestiti dal sistema operativo); riceve solo un identificativo opaco della credenziale e un esito. **Nessun backend, nessuna trasmissione.** `crypto.getRandomValues` è usato **solo** per generare la *challenge* richiesta dall'API WebAuthn (numeri casuali), **non** per cifrare i dati.
+  - **Completamente opzionale** con «Attiva blocco visualizzazione» / «Disattiva blocco visualizzazione» e «Blocca ora». Se WebAuthn non è supportato, la scheda resta utilizzabile normalmente.
+  - **Anti-lock-out**: dalla schermata di blocco è sempre possibile disattivare il blocco; se la biometria/PIN non è disponibile o fallisce, una semplice conferma rimuove comunque il blocco. L'utente non resta mai chiuso fuori dai propri dati. Lo sblocco vale per la sessione: alla chiusura/ricarica dell'app la scheda torna bloccata.
+
+---
+
 ## Licenza e dati
 
 Dati forniti dallo **U.S. Geological Survey (USGS)** (di pubblico dominio) e
