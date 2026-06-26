@@ -6,7 +6,7 @@
 //  - dati USGS: network-first con fallback alla cache (ultimo dato noto offline)
 //  - tiles mappa / Leaflet CDN: cache-first (le tiles sono immutabili)
 
-const VERSION = 'v2';
+const VERSION = 'v3';
 const SHELL_CACHE = 'sisma-shell-' + VERSION;
 const DATA_CACHE = 'sisma-data-' + VERSION;
 const TILE_CACHE = 'sisma-tiles-' + VERSION;
@@ -17,6 +17,8 @@ const SHELL_ASSETS = [
   './style.css',
   './manifest.webmanifest',
   './icon.svg',
+  './vendor/leaflet/leaflet.css',
+  './vendor/leaflet/leaflet.js',
   './src/main.js',
   './src/config.js',
   './src/state.js',
@@ -80,8 +82,8 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Tiles OpenStreetMap e Leaflet da CDN → cache-first.
-  if (url.hostname.endsWith('tile.openstreetmap.org') || url.hostname === 'unpkg.com') {
+  // Tiles OpenStreetMap → cache-first (le tiles sono immutabili).
+  if (url.hostname.endsWith('tile.openstreetmap.org')) {
     event.respondWith(cacheFirst(request, TILE_CACHE));
     return;
   }
