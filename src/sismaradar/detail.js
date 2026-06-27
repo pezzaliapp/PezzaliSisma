@@ -73,8 +73,11 @@ export function renderDetail(data) {
   const { metrics, variation, energy, temporal, depth } = data;
 
   if (!metrics || !metrics.count) {
+    // Nessun evento nella selezione: messaggio chiaro + suggerimento, NESSUN
+    // mini-grafico vuoto. La frase obbligatoria resta sempre presente.
     body.innerHTML =
-      '<p class="srDExpl">Dati non sufficienti per gli indicatori descrittivi.</p>' +
+      '<p class="srDExpl">Non ci sono eventi sufficienti nella selezione corrente per calcolare gli indicatori descrittivi.</p>' +
+      '<p class="srDExpl">Prova ad aumentare il periodo, abbassare la magnitudo minima o cambiare area.</p>' +
       `<p class="srDClaim">${SR_CLAIM}</p>`;
     return;
   }
