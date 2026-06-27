@@ -92,3 +92,74 @@ export function explain(metrics, variation) {
   }
   return parts.join(' ');
 }
+
+// ---------------------------------------------------------------------------
+// Indicatori descrittivi aggiuntivi (V2.0-B1). Funzioni PURE su eventi GIÀ
+// REGISTRATI. Sono descrittivi: NON modificano il livello (Normale/Da
+// osservare/Attività elevata) e non costituiscono una previsione.
+// ---------------------------------------------------------------------------
+
+// Energia sismica stimata con la relazione di Gutenberg–Richter:
+//   log10(E[J]) = 1.5*M + 4.8   =>   E = 10^(1.5*M + 4.8)  (Joule)
+// Ritorna energia totale stimata, quella dell'evento massimo e la sua quota.
+// È una STIMA, dominata dagli eventi di magnitudo maggiore.
+export function seismicEnergy(events) {
+  const out = { totalJoule: 0, maxEventJoule: 0, dominantShare: 0 };
+  if (!Array.isArray(events) || !events.length) return out;
+  let total = 0, maxE = 0;
+  for (const e of events) {
+    const M = Number(e.mag);
+    if (!Number.isFinite(M)) continue;
+    const E = Math.pow(10, 1.5 * M + 4.8);
+    total += E;
+    if (E > maxE) maxE = E;
+  }
+  out.totalJoule = total;
+  out.maxEventJoule = maxE;
+  out.dominantShare = total > 0 ? maxE / total : 0;
+  return out;
+}
+
+// Distribuzione temporale: conteggio eventi in `bins` intervalli uguali tra
+// startMs e endMs (epoch ms). Ritorna [{ from, to, count }]. Funzione pura.
+export function temporalDistribution(events, startMs, endMs, bins = 8) {
+  const out = [];
+  const a = Number(startMs), b = Number(endMs);
+  const n = Math.max(1, Math.floor(Number(bins) || 0));
+  if (!Number.isFinite(a) || !Number.isFinite(b) || b <= a) return out;
+  const step = (b - a) / n;
+  for (let i = 0; i < n; i++) out.push({ from: a + i * step, to: a + (i + 1) * step, count: 0 });
+  if (!Array.isArray(events)) return out;
+  for (const e of events) {
+    const t = Number(e.time);
+    if (!Number.isFinite(t) || t < a || t > b) continue;
+    let idx = Math.floor((t - a) / step);
+    if (idx >= n) idx = n - 1; // include l'estremo superiore nell'ultimo bucket
+    if (idx < 0) idx = 0;
+    out[idx].count++;
+  }
+  return out;
+}
+
+// Fasce di profondità (km) dichiarate, intervalli semiaperti [min, max).
+export const DEPTH_BANDS = [
+  { label: '0–10', min: 0, max: 10 },
+  { label: '10–30', min: 10, max: 30 },
+  { label: '30–70', min: 30, max: 70 },
+  { label: '70–300', min: 70, max: 300 },
+  { label: '>300', min: 300, max: Infinity }
+];
+
+// Distribuzione per profondità: conteggi per fascia. Funzione pura.
+export function depthDistribution(events) {
+  const out = DEPTH_BANDS.map(b => ({ label: b.label, min: b.min, max: b.max, count: 0 }));
+  if (!Array.isArray(events)) return out;
+  for (const e of events) {
+    const d = Number(e.depth);
+    if (!Number.isFinite(d) || d < 0) continue;
+    for (const band of out) {
+      if (d >= band.min && (d < band.max || band.max === Infinity)) { band.count++; break; }
+    }
+  }
+  return out;
+}

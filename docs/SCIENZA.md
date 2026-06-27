@@ -73,9 +73,32 @@ eventi **già caricati** in app.
 
 ---
 
-## SismaRadar (Milestone C3)
-Vedi [CHANGELOG.md](../CHANGELOG.md). Motore statistico **puro** su eventi già
-registrati: numero, magnitudo media/massima, profondità media, eventi
-superficiali, concentrazione geografica (griglia ~1°), sciami/cluster, variazione
-di frequenza rispetto alla finestra precedente reale. Indicatore Normale / Da
-osservare / Attività elevata con soglie dichiarate. Non è una previsione.
+## SismaRadar (Milestone C3 + V2.0-B)
+Motore statistico **puro** su eventi già registrati. Indicatore Normale / Da
+osservare / Attività elevata con soglie dichiarate. **Non è una previsione.**
+
+### Indicatori base (C3)
+Numero eventi, magnitudo media/massima, profondità media, eventi superficiali
+(≤10 km), concentrazione geografica (griglia ~1°), sciami/cluster, variazione di
+frequenza rispetto alla **finestra precedente reale**.
+
+**Livello (soglie trasparenti):** *Attività elevata* = variazione ≥ +50% **e**
+(evento forte per l'area **o** concentrazione ≥ 50%); *Da osservare* = variazione
+≥ +25% **o** concentrazione ≥ 40%; altrimenti *Normale*. Magnitudo «forte per
+l'area»: Mondo 6.0, Italia/Mediterraneo 4.5.
+
+### Indicatori descrittivi aggiuntivi (V2.0-B)
+Sono **descrittivi**: non modificano il livello e non costituiscono una previsione.
+
+- **Energia sismica stimata** — relazione di **Gutenberg–Richter**
+  `log10(E[J]) = 1.5·M + 4.8`, sommata sugli eventi. È una **stima**, il cui
+  valore è **dominato dagli eventi di magnitudo maggiore** (scala esponenziale).
+  *Limite:* dipende solo dalla magnitudo; non considera meccanismo o durata.
+- **Distribuzione temporale** — conteggio eventi in intervalli uguali entro la
+  finestra. *Limite:* descrive il passato recente, non indica evoluzioni future.
+- **Distribuzione per profondità** — conteggi per fasce (km), intervalli
+  semiaperti `[min, max)`: **0–10, 10–30, 30–70, 70–300, >300**. *Limite:* le
+  profondità possono essere riviste dagli enti.
+
+Ogni indicatore è mostrato con valore, spiegazione, limite e la frase «non è una
+previsione». Tutto calcolato **sul dispositivo**, sui dati già caricati.
