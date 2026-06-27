@@ -1,14 +1,14 @@
 'use strict';
 
 // Service worker (Vanilla, nessuna build). Strategie:
-//  - navigazione/HTML  -> network-first  (online = sempre l'ultima index)
-//  - JS/CSS same-origin -> stale-while-revalidate (si auto-aggiornano)
+//  - app same-origin (HTML/JS/CSS) -> network-first (online = sempre l'ultima
+//    versione; HTML e JS si aggiornano INSIEME, niente skew markup/JS)
 //  - tiles mappa        -> cache-first    (immutabili)
 //  - dati USGS/INGV     -> network-first  (ultimo dato noto offline)
 // Precache resiliente: un singolo asset non scaricabile NON blocca l'install,
 // evitando di restare incastrati su una versione vecchia.
 
-const VERSION = 'v26';
+const VERSION = 'v27';
 const SHELL_CACHE = 'sisma-shell-' + VERSION;
 const DATA_CACHE = 'sisma-data-' + VERSION;
 const TILE_CACHE = 'sisma-tiles-' + VERSION;
@@ -103,19 +103,6 @@ async function cacheFirst(request, cacheName) {
   return response;
 }
 
-// Stale-while-revalidate: serve la cache subito ma riscarica in background.
-async function staleWhileRevalidate(request, cacheName) {
-  const cache = await caches.open(cacheName);
-  const cached = await cache.match(request);
-  const network = fetch(request)
-    .then(response => {
-      if (response && response.ok) cache.put(request, response.clone());
-      return response;
-    })
-    .catch(() => null);
-  return cached || (await network) || fetch(request);
-}
-
 self.addEventListener('fetch', event => {
   const { request } = event;
   if (request.method !== 'GET') return;
@@ -134,15 +121,15 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Stessa origine.
+  // Stessa origine (codice dell'app: HTML, JS, CSS, asset).
+  // network-first per TUTTI: così dopo un deploy l'HTML aggiornato e il JS/CSS
+  // aggiornati arrivano INSIEME quando si è online. Con stale-while-revalidate
+  // il JS restava una versione indietro rispetto all'HTML (network-first),
+  // creando uno skew: markup nuovo + JS vecchio (es. il pannello SismaRadar B-2
+  // restava vuoto perché girava la radar.js precedente). Offline resta coperto
+  // dal fallback alla cache (asset in precache o già visitati).
   if (url.origin === self.location.origin) {
-    if (isNavigation(request)) {
-      // HTML sempre fresco quando online; cache come fallback offline.
-      event.respondWith(networkFirst(request, SHELL_CACHE));
-    } else {
-      // JS/CSS/asset: veloci dalla cache ma si auto-aggiornano in background.
-      event.respondWith(staleWhileRevalidate(request, SHELL_CACHE));
-    }
+    event.respondWith(networkFirst(request, SHELL_CACHE));
     return;
   }
 
