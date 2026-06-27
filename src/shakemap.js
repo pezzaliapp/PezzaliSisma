@@ -23,6 +23,7 @@
 import { SHAKE_MIN_MAG, SHAKE_MAX_KM } from './config.js';
 import { state } from './state.js';
 import { haversineKm } from './geo.js';
+import { buildPlaceExplanation, explanationHtml } from './decision/explain.js';
 
 const $ = id => document.getElementById(id);
 
@@ -127,16 +128,13 @@ export function renderShake(results) {
     const dist = r.epicentralKm.toFixed(0);
     const depth = est.depthKm.toFixed(0);
     const source = escapeHtml(ev.source || '—');
-    const expl =
-      `${title}: intensità stimata <b>${est.label}</b>. ` +
-      `Evento M${mag} a ${dist} km, profondità ${depth} km. ` +
-      `Stima semplificata basata su magnitudo, distanza e profondità (modello Allen–Wald–Worden 2012). ` +
-      `Non è una ShakeMap ufficiale.`;
+    // DS-1: spiegazione esplicabile a 4 parti (Fatto/Significato/Perché/Limiti).
+    const block = explanationHtml(buildPlaceExplanation(r));
     return (
       `<div class="shakeItem shake-${est.key}">` +
       `<div class="shakeHead"><span class="shakeClass">${escapeHtml(est.label)}</span><b>${title}</b></div>` +
-      `<p class="shakeExpl">${expl}</p>` +
-      `<details class="shakeDetails"><summary>Dettagli</summary>` +
+      block +
+      `<details class="shakeDetails"><summary>Dettagli tecnici</summary>` +
       `<div class="shakeRow"><span>Intensità stimata (MCS/MMI)</span><b>~ ${est.mmi.toFixed(1)}</b></div>` +
       `<div class="shakeRow"><span>Magnitudo evento</span><b>M ${mag}</b></div>` +
       `<div class="shakeRow"><span>Distanza dall'epicentro</span><b>${dist} km</b></div>` +

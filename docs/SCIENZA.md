@@ -111,3 +111,40 @@ distribuzione temporale e per profondità come **mini-grafici a barre in CSS pur
 magnitudo max/media, profondità media e sciami/cluster. Il pannello **non modifica
 il livello** e si chiude con: «Questi indicatori descrivono eventi già registrati e
 non costituiscono una previsione sismica né un'allerta ufficiale.»
+
+## Decision Support — DS-1: «Cosa significa»
+
+Per ogni **luogo salvato** con un evento significativo già caricato, l'app
+trasforma i valori già calcolati (intensità stimata, distanza, profondità) in una
+spiegazione a **schema fisso di 4 parti**, ognuna riconducibile a una **regola
+dichiarata** e a un **modello documentato** (tracciabilità completa: per ogni frase
+si conosce *dato → regola → modello*). Niente previsione, niente allarme, niente
+testo casuale: **se la stima non è disponibile, non viene prodotta alcuna frase**.
+
+| Parte | Regola | Da quale dato | Modello/base |
+|---|---|---|---|
+| **Fatto osservato** | R0 | evento ufficiale (M, profondità) + distanza Haversine | nessun modello: dato osservato |
+| **Significato** | R1 | classe d'intensità da `estimateIntensity` | IPE AWW2012 + descrizioni scala macrosismica MCS/MMI |
+| **Perché** | R2 | distanza ipocentrale `r` | termine di attenuazione `c₂·ln(r)` dell'IPE AWW2012 |
+| **Limiti** | R-LIM | identità/taratura del modello | limiti dichiarati AWW2012 |
+
+**Mappa classe → effetti (R1).** È la descrizione della scala macrosismica (effetti
+osservati) applicata a eventi **già avvenuti**, non una previsione:
+
+| Classe (MMI) | Significato |
+|---|---|
+| molto lieve (<2.5) | in genere non avvertita; nessun effetto sulle strutture |
+| lieve (2.5–4.5) | normalmente percepita da parte della popolazione; raramente danni |
+| moderata (4.5–6.0) | avvertita dai più; lievi effetti su oggetti; danni in genere assenti/limitati |
+| forte (6.0–7.5) | avvertita da tutti; possibili danni leggeri/moderati agli edifici più vulnerabili |
+| molto forte (≥7.5) | possibili danni alle costruzioni; riferimento alle valutazioni ufficiali |
+
+**Perché l'attenuazione è sempre corretta (R2).** L'IPE è **monotòna decrescente**
+nella distanza ipocentrale: a distanza/profondità maggiori corrispondono effetti
+attesi minori sul luogo rispetto a un punto più vicino alla sorgente. La frase
+descrive la relazione del modello, non un confronto inventato.
+
+**Limiti (R-LIM).** È una **stima** (non una misura), basata su Allen–Wald–Worden
+(2012); ignora gli effetti locali del terreno, geometria di faglia e direttività;
+sotto M5 è un'estrapolazione prudente. **Non sostituisce** Protezione Civile, INGV o
+USGS. Tutto è calcolato **sul dispositivo**, sui dati ufficiali già caricati.

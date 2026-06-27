@@ -291,6 +291,16 @@ body.noScroll{overflow:hidden}
 .shake-forte .shakeClass{background:#3a2710;color:#ffc079}
 .shake-molto-forte{border-left-color:#d9633a}
 .shake-molto-forte .shakeClass{background:#3a1f14;color:#f0a07e}
+/* DS-1 — blocco "Cosa significa" (schema fisso: Fatto/Significato/Perché/Limiti) */
+.dsBlock{margin:8px 0 0}
+.dsPart{margin:8px 0 0;line-height:1.5;color:var(--text)}
+.dsPart .dsLabel{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:2px}
+.dsPart.dsLimits{color:var(--muted);font-size:13px}
+.dsWhy{margin-top:10px}
+.dsWhy summary{cursor:pointer;color:var(--blue);font-size:13px}
+.dsProv{margin-top:8px;padding-top:8px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:2px}
+.dsProv b{color:var(--text);font-size:12px}
+.dsProv span{color:var(--muted);font-size:12px;line-height:1.4}
 @media(max-width:900px){
   .prepPanel{max-height:94dvh}
 }
