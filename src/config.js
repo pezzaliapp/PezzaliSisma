@@ -89,6 +89,11 @@ export const PERSONAL_LOCK_KEY = 'pezzalisisma:cardlock';
 export const PLACE_THRESHOLD_KEY = 'pezzalisisma:placethreshold';
 export const PLACE_THRESHOLD_DEFAULT = { minMag: 3, maxKm: 50 };
 
+// "Intensità stimata personale" (V2.0-A1): soglia specifica di significatività
+// dell'evento per la stima d'intensità su un luogo. Solo eventi GIÀ registrati.
+export const SHAKE_MIN_MAG = 3.5;
+export const SHAKE_MAX_KM = 200;
+
 // Reverse geocoding OPZIONALE e su richiesta esplicita (servizio pubblico OSM).
 export const NOMINATIM_REVERSE = 'https://nominatim.openstreetmap.org/reverse';
 // Chiave localStorage del consenso una-tantum al reverse geocoding.

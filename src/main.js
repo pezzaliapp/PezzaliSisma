@@ -39,6 +39,7 @@ import { initCard } from './personalcard.js';
 import { initCardLock } from './cardlock.js';
 import { initShare } from './share.js';
 import { initEventMode, refreshEventMode } from './eventmode.js';
+import { initShake, refreshShake } from './shakemap.js';
 import {
   loadStoredPosition,
   storePosition,
@@ -207,6 +208,7 @@ async function loadData() {
     lastUpdate: state.lastUpdate
   });
   refreshEventMode(); // A5: evidenzia eventi già avvenuti vicini ai luoghi salvati
+  refreshShake();     // V2.0-A1: intensità stimata personale sui luoghi salvati
 }
 
 // Applica una nuova posizione utente (da richiesta singola o da watch).
@@ -413,6 +415,7 @@ window.addEventListener('load', () => {
   initCardLock();
   initShare();
   initEventMode();
+  initShake();
 
   // Badge connessione: aggiorna l'attività al variare di online/offline.
   window.addEventListener('online', renderActivityNow);

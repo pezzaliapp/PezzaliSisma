@@ -247,6 +247,30 @@ body.noScroll{overflow:hidden}
 .thresholdRow legend{font-size:13px;color:var(--muted);padding:0 4px}
 .thresholdRow label{margin:8px 0 0}
 .thNote{margin:10px 0 2px;font-size:12px;color:var(--muted);line-height:1.45}
+/* Intensità stimata personale (V2.0-A1) — toni misurati */
+.shakeList{display:flex;flex-direction:column;gap:10px;margin:10px 0}
+.shakeEmpty{color:var(--muted);font-size:14px}
+.shakeItem{padding:12px 14px;background:#0d1324;border:1px solid var(--line);border-left:4px solid var(--line);border-radius:14px}
+.shakeHead{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.shakeHead b{color:var(--text)}
+.shakeClass{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;padding:3px 10px;border-radius:999px;background:#243047;color:#dfe8f7}
+.shakeExpl{margin:8px 0 0;color:var(--muted);line-height:1.5}
+.shakeExpl b{color:var(--text)}
+.shakeDetails{margin-top:8px}
+.shakeDetails summary{cursor:pointer;color:var(--blue);font-size:14px}
+.shakeRow{display:flex;justify-content:space-between;gap:12px;padding:4px 0;border-top:1px solid var(--line)}
+.shakeRow span{color:var(--muted);font-size:13px}
+.shakeRow b{color:var(--text);text-align:right}
+.shake-molto-lieve{border-left-color:#2dd36f}
+.shake-molto-lieve .shakeClass{background:#173a2a;color:#86e5ab}
+.shake-lieve{border-left-color:#7bd88f}
+.shake-lieve .shakeClass{background:#1c3326;color:#a7e8bd}
+.shake-moderata{border-left-color:var(--yellow)}
+.shake-moderata .shakeClass{background:#3a330f;color:#ffe08a}
+.shake-forte{border-left-color:var(--orange)}
+.shake-forte .shakeClass{background:#3a2710;color:#ffc079}
+.shake-molto-forte{border-left-color:#d9633a}
+.shake-molto-forte .shakeClass{background:#3a1f14;color:#f0a07e}
 @media(max-width:900px){
   .prepPanel{max-height:94dvh}
 }

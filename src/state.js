@@ -19,6 +19,7 @@ export const state = {
   cardLocked: false,   // blocco visualizzazione attivo (A3-bis, persistito)
   cardUnlocked: false, // sbloccata in questa sessione (solo in memoria)
   eventMode: null,     // Modalità Evento (A5): match corrente o null
+  shake: [],           // Intensità stimata personale (V2.0-A1): risultati per luogo
 
   filters: {
     period: 'week',   // day | week | month

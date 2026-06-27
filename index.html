@@ -299,6 +299,7 @@
         <button class="prepTab" type="button" role="tab" id="tabDurante" aria-controls="panelDurante" aria-selected="false" tabindex="-1">Durante</button>
         <button class="prepTab" type="button" role="tab" id="tabDopo" aria-controls="panelDopo" aria-selected="false" tabindex="-1">Dopo</button>
         <button class="prepTab" type="button" role="tab" id="tabFamiglia" aria-controls="panelFamiglia" aria-selected="false" tabindex="-1">La mia famiglia</button>
+        <button class="prepTab" type="button" role="tab" id="tabShake" aria-controls="panelShake" aria-selected="false" tabindex="-1">Intensità stimata</button>
         <button class="prepTab" type="button" role="tab" id="tabScheda" aria-controls="panelScheda" aria-selected="false" tabindex="-1">Scheda personale</button>
         <button class="prepTab" type="button" role="tab" id="tabStoBene" aria-controls="panelStoBene" aria-selected="false" tabindex="-1">Sto bene</button>
         <button class="prepTab" type="button" role="tab" id="tabNumeri" aria-controls="panelNumeri" aria-selected="false" tabindex="-1">Numeri utili</button>
@@ -421,6 +422,17 @@
             <button id="placeClear" type="button" class="ghost danger" hidden>Cancella tutti</button>
           </div>
           <div id="placeList" class="placeList"></div>
+        </section>
+
+        <!-- INTENSITÀ STIMATA PERSONALE (V2.0-A1): stima prudente, non ufficiale -->
+        <section id="panelShake" class="prepPanelTab" role="tabpanel" aria-labelledby="tabShake" hidden>
+          <p class="prepPrivacy">Stima semplificata basata su dati ufficiali e relazioni pubblicate. Non è una ShakeMap ufficiale e non sostituisce Protezione Civile, INGV o USGS.</p>
+          <p class="thNote">Per ogni luogo salvato, l'intensità stimata dall'evento <strong>già registrato</strong> più rilevante (M ≥ 3.5 entro 200 km). Modello <strong>Allen–Wald–Worden (2012)</strong>, semplificato; ignora effetti di sito e geometria della faglia. Dipende dall'area e dal periodo selezionati. <strong>Non è una previsione.</strong></p>
+          <div id="shakeList" class="shakeList"></div>
+          <div class="prepLinks">
+            <a href="https://earthquake.usgs.gov/data/shakemap/" target="_blank" rel="noopener">ShakeMap ufficiale — USGS</a>
+            <a href="https://shakemap.ingv.it" target="_blank" rel="noopener">ShakeMap ufficiale — INGV</a>
+          </div>
         </section>
 
         <!-- SCHEDA PERSONALE: facoltativa, solo localStorage -->
