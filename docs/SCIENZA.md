@@ -102,3 +102,12 @@ Sono **descrittivi**: non modificano il livello e non costituiscono una previsio
 
 Ogni indicatore è mostrato con valore, spiegazione, limite e la frase «non è una
 previsione». Tutto calcolato **sul dispositivo**, sui dati già caricati.
+
+**Visualizzazione (V2.0-B2).** Gli indicatori sono mostrati nella card SismaRadar
+in un pannello espandibile **«Perché questo indicatore?»** (chiuso di default):
+energia totale stimata (con nota «dominata dagli eventi di magnitudo maggiore»),
+distribuzione temporale e per profondità come **mini-grafici a barre in CSS puro**
+(nessuna libreria), frequenza eventi, confronto con la finestra precedente,
+magnitudo max/media, profondità media e sciami/cluster. Il pannello **non modifica
+il livello** e si chiude con: «Questi indicatori descrivono eventi già registrati e
+non costituiscono una previsione sismica né un'allerta ufficiale.»

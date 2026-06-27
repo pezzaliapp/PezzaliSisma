@@ -105,6 +105,26 @@ a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible,su
 .srExplain{margin:10px 0 0;font-size:13px;line-height:1.45}
 .srUpdated{margin:6px 0 0;font-size:12px;color:var(--muted)}
 .srNote{margin:10px 0 0;font-size:11px;color:var(--muted);line-height:1.4;border-top:1px solid var(--line);padding-top:8px}
+/* SismaRadar — pannello esplicabile "Perché questo indicatore?" (B-2) */
+.srDetail{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+.srDetail>summary{cursor:pointer;color:var(--blue);font-size:13px;font-weight:700;list-style:none}
+.srDetail>summary::-webkit-details-marker{display:none}
+.srDetail>summary::after{content:'▸';float:right;color:var(--muted)}
+.srDetail[open]>summary::after{content:'▾'}
+.srDetailBody{margin-top:10px}
+.srDItem{padding:8px 0;border-top:1px solid #1b2740}
+.srDItem:first-child{border-top:0}
+.srDHead{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.srDHead span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.02em}
+.srDHead b{font-size:14px;text-align:right}
+.srDExpl{margin:4px 0 0;font-size:12px;line-height:1.4;color:var(--muted)}
+.srBars{margin:8px 0 2px;display:flex;flex-direction:column;gap:4px}
+.srBarRow{display:flex;align-items:center;gap:8px}
+.srBarLabel{flex:0 0 64px;font-size:10px;color:var(--muted)}
+.srBarTrack{flex:1;height:8px;background:#0d1324;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.srBarTrack>i{display:block;height:100%;background:var(--blue);border-radius:6px}
+.srBarVal{flex:0 0 28px;text-align:right;font-size:11px;color:var(--text)}
+.srDClaim{margin:10px 0 0;font-size:11px;color:var(--muted);line-height:1.4;border-top:1px solid var(--line);padding-top:8px}
 /* Pulsanti a tutta larghezza nelle card */
 .fullBtn{width:100%;margin-top:10px}
 .importantBody .nearGrid,.nearestBody .nearGrid{grid-template-columns:1fr 1fr}

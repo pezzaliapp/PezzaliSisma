@@ -5,7 +5,11 @@ import {
 } from '../config.js';
 import { fetchJson } from '../sources/http.js';
 import { inBounds, fmtTime } from '../geo.js';
-import { analyze, frequencyVariation, classify, explain, LEVEL_LABEL } from './engine.js';
+import {
+  analyze, frequencyVariation, classify, explain, LEVEL_LABEL,
+  seismicEnergy, temporalDistribution, depthDistribution
+} from './engine.js';
+import { renderDetail } from './detail.js';
 
 const $ = id => document.getElementById(id);
 
@@ -87,10 +91,20 @@ export async function refreshRadar({ raw, region, period, source, lastUpdate }) 
   const events = raw.filter(e => inBounds(e.lat, e.lon, (REGIONS[region] || {}).bounds));
   const metrics = analyze(events);
 
+  // Indicatori descrittivi B-1 (nessuna nuova fetch): energia, distribuzione
+  // temporale (finestra coerente con previousCount) e per profondità.
+  const days = PERIOD_DAYS[period] || 7;
+  const now = Date.now();
+  const energy = seismicEnergy(events);
+  const temporal = temporalDistribution(events, now - days * 86400000, now, 8);
+  const depth = depthDistribution(events);
+
   // Stato immediato (descrittivo); il trend arriva dopo il conteggio precedente.
   renderRadar(metrics, 'pending', null, '', lastUpdate);
+  renderDetail({ metrics, variation: 'pending', energy, temporal, depth });
   if (!metrics.count) {
     renderRadar(metrics, null, null, 'Dati non sufficienti per l\'analisi statistica.', lastUpdate);
+    renderDetail({ metrics, variation: null, energy, temporal, depth });
     return;
   }
 
@@ -106,4 +120,5 @@ export async function refreshRadar({ raw, region, period, source, lastUpdate }) 
   const variation = frequencyVariation(metrics.count, prev);
   const level = classify(metrics, variation, region);
   renderRadar(metrics, variation, level, explain(metrics, variation), lastUpdate);
+  renderDetail({ metrics, variation, energy, temporal, depth });
 }
