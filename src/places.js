@@ -7,8 +7,24 @@
 import { PLACES_KEY } from './config.js';
 import { state } from './state.js';
 import { locateOnce, geoErrorMessage } from './geolocation.js';
+import { refreshShake } from './shakemap.js';
 
 const $ = id => document.getElementById(id);
+
+// Soglia (gradi) sotto la quale le coordinate coincidono con (0,0): ~0.0001° ≈
+// 11 m. Un luogo a 0.0000, 0.0000 ("Null Island", oceano aperto) non è un luogo
+// reale dell'utente: spesso è il risultato di un rilevamento GPS fallito.
+const COORD_EPS = 1e-4;
+
+// Valida una coppia di coordinate. Ritorna un messaggio d'errore o null se ok.
+function validateCoords(la, lo) {
+  if (!Number.isFinite(la) || la < -90 || la > 90) return 'Latitudine non valida (-90…90).';
+  if (!Number.isFinite(lo) || lo < -180 || lo > 180) return 'Longitudine non valida (-180…180).';
+  if (Math.abs(la) < COORD_EPS && Math.abs(lo) < COORD_EPS) {
+    return 'Coordinate 0.0000, 0.0000 non valide: indica un luogo reale o usa «Usa la mia posizione attuale».';
+  }
+  return null;
+}
 
 // --- Persistenza (device-only) ---------------------------------------------
 
@@ -40,8 +56,8 @@ function newId() {
 export function addPlace({ label, name, lat, lon, note }) {
   const la = Number(lat);
   const lo = Number(lon);
-  if (!Number.isFinite(la) || la < -90 || la > 90) return { ok: false, error: 'Latitudine non valida (-90…90).' };
-  if (!Number.isFinite(lo) || lo < -180 || lo > 180) return { ok: false, error: 'Longitudine non valida (-180…180).' };
+  const err = validateCoords(la, lo);
+  if (err) return { ok: false, error: err };
   const place = {
     id: newId(),
     label: (label || 'Altro').trim(),
@@ -61,8 +77,8 @@ export function updatePlace(id, { label, name, lat, lon, note }) {
   if (idx === -1) return { ok: false, error: 'Luogo non trovato.' };
   const la = Number(lat);
   const lo = Number(lon);
-  if (!Number.isFinite(la) || la < -90 || la > 90) return { ok: false, error: 'Latitudine non valida (-90…90).' };
-  if (!Number.isFinite(lo) || lo < -180 || lo > 180) return { ok: false, error: 'Longitudine non valida (-180…180).' };
+  const err = validateCoords(la, lo);
+  if (err) return { ok: false, error: err };
   state.places[idx] = {
     ...state.places[idx],
     label: (label || 'Altro').trim(),
@@ -212,6 +228,7 @@ export function initPlaces() {
     exitEdit();
     setMsg(wasEditing ? 'Modifiche salvate su questo dispositivo.' : 'Luogo salvato su questo dispositivo.');
     renderPlaces();
+    refreshShake(); // tiene allineata la scheda "Intensità stimata"
   });
 
   if (cancelBtn) {
@@ -234,6 +251,7 @@ export function initPlaces() {
       removePlace(id);
       if (editingId === id) exitEdit();
       renderPlaces();
+      refreshShake(); // tiene allineata la scheda "Intensità stimata"
     }
   });
 
@@ -243,6 +261,7 @@ export function initPlaces() {
     clearPlaces();
     exitEdit();
     renderPlaces();
+    refreshShake(); // tiene allineata la scheda "Intensità stimata"
     setMsg('Tutti i luoghi sono stati cancellati.');
   });
 }
