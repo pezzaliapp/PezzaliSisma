@@ -4,6 +4,31 @@ import { fmtTime } from './geo.js';
 
 const $ = id => document.getElementById(id);
 
+// Motivo leggibile per il tipo di errore sorgente (diagnostica precisa).
+const REASON = {
+  timeout: 'risposta lenta',
+  server: 'errore temporaneo API',
+  client: 'dati non disponibili per questa area/periodo',
+  network: 'errore temporaneo (rete)'
+};
+
+// Costruisce il messaggio diagnostico sorgente dati. Funzione PURA (testabile).
+// Distingue: nessuna fonte / fallback con causa / nessun evento / tutto ok.
+export function sourceMessage(s) {
+  if (!s.activeSource) {
+    const r = REASON[s.errorKind] || 'non disponibile';
+    return { text: `Nessuna fonte dati disponibile. ${s.triedFirst || 'Sorgente'}: ${r}.`, cls: 'err' };
+  }
+  if (s.fellBack) {
+    const r = REASON[s.errorKind] || 'non disponibile';
+    return { text: `${s.triedFirst}: ${r}. Fonte attiva: ${s.activeSource} fallback.`, cls: '' };
+  }
+  if (s.shown === 0) {
+    return { text: `${s.activeSource}: nessun evento nella selezione corrente.`, cls: '' };
+  }
+  return null;
+}
+
 // Aggiorna la card "Attività attuale": eventi visualizzati, magnitudo massima,
 // ultimo evento, sorgente attiva, ultimo aggiornamento, stato connessione ed
 // eventuale fallback automatico.
@@ -20,14 +45,11 @@ export function renderActivity(s) {
   $('dashUpdated').textContent = s.lastUpdate ? fmtTime(s.lastUpdate) : '–';
 
   const fb = $('dashFallback');
-  if (!s.activeSource) {
+  const msg = sourceMessage(s);
+  if (msg) {
     fb.hidden = false;
-    fb.className = 'dashFallback err';
-    fb.textContent = 'Nessuna fonte dati disponibile al momento.';
-  } else if (s.fellBack) {
-    fb.hidden = false;
-    fb.className = 'dashFallback';
-    fb.textContent = `Fallback automatico: ${s.triedFirst} non disponibile → uso ${s.activeSource}.`;
+    fb.className = 'dashFallback' + (msg.cls ? ' ' + msg.cls : '');
+    fb.textContent = msg.text;
   } else {
     fb.hidden = true;
     fb.className = 'dashFallback';

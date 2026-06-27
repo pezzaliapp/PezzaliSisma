@@ -23,6 +23,7 @@ function fetchFrom(key, period, region) {
 //   { events, activeSource, fellBack, triedFirst, error }
 export async function loadEvents({ period, region, source }) {
   const order = resolveOrder(region, source);
+  let primaryError = null; // errore della sorgente tentata per prima
   let lastError = null;
 
   for (let i = 0; i < order.length; i++) {
@@ -34,18 +35,22 @@ export async function loadEvents({ period, region, source }) {
         activeSource: key,
         fellBack: i > 0,
         triedFirst: order[0],
-        error: null
+        error: i > 0 ? primaryError : null,
+        errorKind: i > 0 && primaryError ? primaryError.kind || 'network' : null
       };
     } catch (err) {
+      if (i === 0) primaryError = err;
       lastError = err;
     }
   }
 
+  const finalError = primaryError || lastError;
   return {
     events: [],
     activeSource: null,
     fellBack: order.length > 1,
     triedFirst: order[0],
-    error: lastError
+    error: finalError,
+    errorKind: (finalError && finalError.kind) || 'network'
   };
 }

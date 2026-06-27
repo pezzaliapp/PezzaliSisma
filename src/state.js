@@ -34,5 +34,6 @@ export const state = {
   activeSource: null, // fonte effettivamente usata nell'ultimo caricamento
   fellBack: false,    // l'ultimo caricamento è avvenuto via fallback
   triedFirst: null,   // sorgente tentata per prima nell'ultimo caricamento
+  sourceErrorKind: null, // tipo errore sorgente primaria: timeout|server|client|network
   lastUpdate: null    // timestamp dell'ultimo caricamento dati riuscito
 };

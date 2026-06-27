@@ -74,6 +74,7 @@ function renderActivityNow() {
     activeSource: state.activeSource,
     fellBack: state.fellBack,
     triedFirst: state.triedFirst,
+    errorKind: state.sourceErrorKind,
     shown: state.filtered.length,
     maxMag: stats.maxMag,
     lastTime: stats.lastTime,
@@ -189,6 +190,7 @@ async function loadData() {
   state.activeSource = res.activeSource;
   state.fellBack = res.fellBack;
   state.triedFirst = res.triedFirst;
+  state.sourceErrorKind = res.errorKind;
 
   if (res.activeSource) {
     state.lastUpdate = Date.now();
